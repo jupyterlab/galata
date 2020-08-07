@@ -1,0 +1,17 @@
+{
+    "jlabBaseUrl": "http://localhost:8888",
+    "jlabToken" : "",
+    "jestConfig": "",
+    "jestPath": "./node_modules/.bin/jest",
+    "testPathPattern": "^.*/tests/.*ts$",
+    "headless": true,
+    "pageWidth": 1024,
+    "pageHeight": 768,
+    "include": [],
+    "exclude": [],
+    "skipVisualRegression": true,
+    "skipHtmlRegression": true,
+    "outputDir": "./test-output",
+    "referenceDir": "./reference-output",
+    "discardMatchedCaptures": true
+}

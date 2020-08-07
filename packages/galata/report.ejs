@@ -1,0 +1,355 @@
+<!--
+// Copyright (c) Bloomberg Finance LP.
+// Distributed under the terms of the Modified BSD License.
+-->
+
+<html>
+<head>
+<title>UI Test Results</title>
+<link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+<link href="./lity/lity.min.css" rel="stylesheet">
+<script src="./jquery-3.4.1.slim.min.js"></script>
+<!--script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script-->
+<script src="./lity/lity.min.js"></script>
+<script src="./bootstrap/js/bootstrap.min.js"></script>
+<script>
+    let passedOn = true;
+    let failedOn = true;
+
+    function applyFilter() {
+        let passedStyle = passedOn ? 'table-row' : 'none';
+        const passedCaptures = document.querySelectorAll('li.capture tr.table-success');
+        passedCaptures.forEach((capture) => {
+            capture.style.display = passedStyle;
+        });
+
+        let failedStyle = failedOn ? 'table-row' : 'none';
+        const failedCaptures = document.querySelectorAll('li.capture tr.table-danger');
+        failedCaptures.forEach((capture) => {
+            capture.style.display = failedStyle;
+        });
+
+        const captures = document.querySelectorAll('li.capture');
+        captures.forEach((capture) => {
+            if (capture.previousElementSibling) {
+                let allHidden = true;
+                const captureRows = capture.querySelectorAll('tbody tr');
+                for (const captureRow of captureRows) {
+                    if (captureRow.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                }
+                if (allHidden) {
+                    capture.style.display = 'none';
+                    capture.previousElementSibling.style.display = 'none';
+                } else {
+                    capture.style.display = 'block';
+                    capture.previousElementSibling.style.display = 'block';
+                }
+            }
+        });
+
+        const passedTests = document.querySelectorAll('li.test.list-group-item-success');
+        passedStyle = passedOn ? 'block' : 'none';
+        passedTests.forEach((test) => {
+            if (test.nextElementSibling && test.nextElementSibling.classList.contains('log')) {
+                test.nextElementSibling.style.display = passedStyle;
+            }
+            test.style.display = passedStyle;
+        });
+
+        const failedTests = document.querySelectorAll('li.test.list-group-item-danger');
+        failedStyle = failedOn ? 'block' : 'none';
+        failedTests.forEach((test) => {
+            if (test.nextElementSibling && test.nextElementSibling.classList.contains('log')) {
+                test.nextElementSibling.style.display = passedStyle;
+            }
+            test.style.display = failedStyle;
+        });
+
+
+        const suites = document.querySelectorAll('li.suite.list-group-item');
+        suites.forEach((suite) => {
+            let allHidden = true;
+            const tests = suite.parentElement.querySelectorAll('li.test');
+            for (const test of tests) {
+                if (test.style.display !== 'none') {
+                    allHidden = false;
+                }
+            }
+            if (allHidden) {
+                suite.style.display = 'none';
+            } else {
+                suite.style.display = 'block';
+            }
+        });
+    }
+
+    function onFilterChanged() {
+        const checkedItem = $('#result-type-filter input:radio:checked').val();
+        passedOn = checkedItem === 'show-all' || checkedItem === 'show-passed';
+        failedOn = checkedItem === 'show-all' || checkedItem === 'show-failed';
+        applyFilter();
+    }
+</script>
+<style>
+    * {
+        font-size: 14px;
+    }
+    .page-container {
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .reg-results, .reg-result-title {
+        display: flex;
+    }
+    .reg-results div {
+        width: 150px;
+    }
+    .reg-result-title p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .status-img {
+        width: 20px;
+        height: 20px;
+    }
+    .errors-img {
+        width: 12px;
+        height: 12px;
+    }
+    .list-group-item.test {
+        filter: brightness(1.1);
+    }
+    .list-group-item.capture {
+        filter: brightness(1.15);
+    }
+    .captures-table {
+        table-layout: fixed;
+    }
+    .captures-table tr th {
+        width: 15%;
+        text-align: center;
+    }
+    .captures-table tr th:nth-child(1) {
+        width: 70%;
+        text-align: left;
+    }
+    .captures-table tr td {
+        text-align: center;
+    }
+    .captures-table tr td:nth-child(1) {
+        text-align: left;
+    }
+    .lity {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    .lity-iframe .lity-container {
+        max-width: 70%;
+        max-height: 70%;
+    }
+    .lity-content {
+        border: 1px solid #777777;
+    }
+    .test-error-messages {
+        background: #FFFFFF;
+        padding: 5px;
+    }
+    li a.btn-outline-danger {
+        line-height: 12px;
+        font-size: 12px;
+        float: right;
+    }
+    .suite-quick-info {
+        float: right;
+    }
+    </style>
+</head>
+<body>
+<div class="page-container p-3">
+    <h2>UI Test Results</h2>
+
+    <% if (data.testResults) { %>
+    <div class="btn-group btn-group-toggle mb-2" id="result-type-filter" data-toggle="buttons">
+        <label class="btn btn-primary px-2 py-1 active">
+          <input type="radio" name="options" id="show-all" value="show-all" onclick="onFilterChanged()" checked> All  <span class="badge badge-light"><%= data.numTotalTests %></span>
+        </label>
+        <label class="btn btn-danger px-2 py-1">
+          <input type="radio" name="options" id="show-failed" value="show-failed" onclick="onFilterChanged()"> Failed  <span class="badge badge-light"><%= data.numFailedTests %></span>
+        </label>
+        <label class="btn btn-success px-2 py-1">
+          <input type="radio" name="options" id="show-passed" value="show-passed" onclick="onFilterChanged()"> Passed  <span class="badge badge-light"><%= data.numPassedTests %></span>
+        </label>
+    </div>
+    
+    <div class="progress mb-3">
+        <% const percentSuccess = parseInt((data.numTotalTests - data.numFailedTests) / data.numTotalTests * 100.0); %>
+        <div class="progress-bar bg-success" role="progressbar" style="width: <%= percentSuccess %>%" aria-valuenow="<%= percentSuccess %>" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar bg-danger" role="progressbar" style="width: <%= (100 - percentSuccess) %>%" aria-valuenow="<%= (100 - percentSuccess) %>" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <% data.testResults.forEach((testResult) => { -%>
+        <%
+            const suiteElapsedTime = (testResult.endTime - testResult.startTime) / 1000.0;
+        %>
+    <ul class="list-group mb-3">
+        <li class="suite list-group-item pl-1 p-1 rounded-bottom list-group-item-<%= testResult.status === 'passed' ? 'success' : 'danger' %>">Suite: <%= testResult.assertionResults.length > 0 ? testResult.assertionResults[0].ancestorTitles.join(' &gt; ') : "" %><img src="./bootstrap/icons/<%= testResult.status === 'passed' ? 'check' : 'alert' %>-circle.svg" class="status-img ml-1"><div class="suite-quick-info">[<%= testResult.name %>, in <%= suiteElapsedTime.toFixed(2) %> s]</div></li>
+        <li class="suite list-group-item ml-1 p-1">
+        <ul class="list-group">
+        <% testResult.assertionResults.forEach((ar, arIndex) => { -%>
+            <li class="test list-group-item pl-3 p-1 list-group-item-<%= ar.status === 'passed' ? 'success' : 'danger' %>">
+                <%= ar.title %>
+                <% if (ar.status !== 'passed') { %>
+                    <a class="btn btn-outline-danger p-1 ml-2" href="#inline-<%= arIndex %>" role="button" data-lity><img src="./bootstrap/icons/list.svg" class="errors-img"> errors</a>
+                    <div id="inline-<%= arIndex %>" class="test-error-messages lity-hide">
+                        <pre><%- ar.failureMessages %></pre>
+                    </div>
+                <% } -%>
+            </li>
+            <% if (ar.captures && ar.captures.length > 0) { %>
+                <li class="capture list-group-item pl-5 p-1 list-group-item-<%= ar.status === 'passed' ? 'success' : 'danger' %>">
+                <table class="table captures-table">
+                    <thead>
+                        <tr>
+                          <th scope="col" class="p-1">Captures</th>
+                          <th scope="col" class="p-1">capture</th>
+                          <th scope="col" class="p-1">reference</th>
+                          <th scope="col" class="p-1">diff</th>
+                        </tr>
+                        <tbody>
+                            <% ar.captures.forEach((capture) => { -%>
+                                <%
+                                    const imageCapture = capture.type === 'image' || capture.type === 'image-diff';
+                                    const diffCapture = capture.type === 'image-diff' || capture.type === 'html-diff';
+                                %>
+                                <tr class="<%= diffCapture ? 'table-danger' : 'table-success' %>">
+                                    <td class="p-1">
+                                        <div class="reg-result-title" title="<%= capture.name %>">
+                                            <img src="./bootstrap/icons/<%= imageCapture ? 'image' : 'document-text' %>.svg" class="status-img ml-1 mr-1">
+                                            <p class="text-secondary mb-0"><%= capture.name %></p>
+                                        </div>
+                                    </td>
+                                    <% if (capture.result !== 'missing-capture') { -%>
+                                        <td class="p-1"><a href="<%= imageCapture ? `../screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../html/${capture.fileName}.html`)}` %>" target="_blank" data-lity>capture</a></td>
+                                    <% } -%>
+                                    <% if (diffCapture) { -%>
+                                        <% if (capture.result === 'different') { -%>
+                                            <td class="p-1"><a href="<%= imageCapture ? `../reference-output/screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../reference-output/html/${capture.fileName}.html`)}` %>" target="_blank"  data-lity>reference</a></td>
+                                        <% } else if (capture.result === 'missing-reference') { -%>
+                                            <td class="p-1">missing</td>
+                                        <% } else if (capture.result === 'missing-reference') { -%>
+                                            <td class="p-1">&nbsp;</td>
+                                        <% } -%>
+                                    <% } else { -%>
+                                        <td class="p-1">&nbsp;</td>
+                                    <% } -%>
+
+                                    <% if (diffCapture && capture.result === 'different') { -%>
+                                        <td class="p-1"><a href="<%= imageCapture ? `../screenshots/diff/${capture.fileName}.png` : `viewer.html?lhs=${encodeURIComponent(`../reference-output/html/${capture.fileName}.html`)}&rhs=${encodeURIComponent(`../html/${capture.fileName}.html`)}` %>" target="_blank"  data-lity>diff</a></td>
+                                    <% } else { -%>
+                                        <td class="p-1">&nbsp;</td>
+                                    <% } -%>
+                                </tr>
+                            <% }); -%>
+                        </tbody>
+                    </thead>
+                </table>
+                </li>
+            <% } %>
+            <% if (ar.logs && ar.logs.length > 0) { %>
+                <li class="log list-group-item pl-5 p-1 list-group-item-<%= ar.status === 'passed' ? 'success' : 'danger' %>">
+                <table class="table captures-table">
+                    <thead>
+                        <tr>
+                          <th scope="col" class="p-1">Logs</th>
+                          <th scope="col" class="p-1">type</th>
+                        </tr>
+                        <tbody>
+                            <% ar.logs.forEach((log) => { -%>
+                                <tr class="<%= log.type === 'error' ? 'table-danger' : log.type === 'warning' ? 'table-warning' : 'table-info' %>">
+                                    <td class="p-1"><%= log.message %></td>
+                                    <td class="p-1"><%= log.type %></td>
+                                </tr>
+                            <% }); -%>
+                        </tbody>
+                    </thead>
+                </table>
+                </li>
+            <% } %>
+        <% }); -%>
+        </ul>
+        </li>
+    </ul>
+    <% }); -%>
+    <% } %>
+
+    
+    <% if (data.jlt.logs && data.jlt.logs.length > 0) { %>
+        <h4 class="mt-5">Logs</h4>
+        <table class="table captures-table">
+            <thead>
+                <tr>
+                  <th scope="col" class="p-1">message</th>
+                  <th scope="col" class="p-1">type</th>
+                </tr>
+                <tbody>
+                    <% data.jlt.logs.forEach((log) => { -%>
+                        <tr class="<%= log.type === 'error' ? 'table-danger' : log.type === 'warning' ? 'table-warning' : 'table-info' %>">
+                            <td class="p-1"><%= log.message %></td>
+                            <td class="p-1"><%= log.type %></td>
+                        </tr>
+                    <% }); -%>
+                </tbody>
+            </thead>
+        </table>
+    <% } %>
+
+    <h4 class="mt-5">Session Info</h4>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th scope="row" class="p-1">Start time:</th>
+                <td class="p-1"><%= (new Date(data.startTime)).toLocaleString() %></td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">Test Id:</th>
+                <td class="p-1"><%= data.jlt.testId %></td>
+            </tr>
+            <% if (data.testResults) { %>
+            <tr>
+                <th scope="row" class="p-1">JupyterLab URL:</th>
+                <td class="p-1"><%= data.jlt.jlabUrl %></td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">JupyterLab Version tested:</th>
+                <td class="p-1"><%= data.jlt.runtimeJlabVersion %></td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">JupyterLab Version of Testing API:</th>
+                <td class="p-1"><%= data.jlt.buildJlabVersion %></td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">Suites:</th>
+                <td class="p-1"><%= data.numPassedTestSuites %> / <%= data.numTotalTestSuites %> passed</td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">Tests:</th>
+                <td class="p-1"><%= data.numPassedTests %> / <%= data.numTotalTests %> passed</td>
+            </tr>
+            <tr>
+                <th scope="row" class="p-1">Jest Output:</th>
+                <td class="p-1"><a href="../jest-output.json">jest-output.json</a></td>
+            </tr>
+            <% } %>
+            <tr>
+                <th scope="row" class="p-1">All Output:</th>
+                <td class="p-1"><a href="../../">all output</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

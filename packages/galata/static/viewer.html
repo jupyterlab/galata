@@ -1,0 +1,97 @@
+<!--
+// Copyright (c) Bloomberg Finance LP.
+// Distributed under the terms of the Modified BSD License.
+-->
+
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    <style>
+        html,
+        body,
+        #container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+
+    <script>
+        const version = '0.20.0';
+        const proxy = URL.createObjectURL(new Blob([`
+            self.MonacoEnvironment = {
+                baseUrl: 'https://unpkg.com/monaco-editor@${version}/min/'
+            };
+            importScripts('https://unpkg.com/monaco-editor@${version}/min/vs/base/worker/workerMain.js');
+        `], { type: 'text/javascript' }));
+
+        require.config({ paths: { 'vs': `https://unpkg.com/monaco-editor@${version}/min/vs` } });
+        window.MonacoEnvironment = { getWorkerUrl: () => proxy };
+
+        const createViewer = (content) => {
+            var model = monaco.editor.createModel(content, "text/html");
+            let editor = monaco.editor.create(document.getElementById('container'), {
+                language: 'html',
+                theme: 'vs-dark',
+                minimap: { enabled: false }
+            });
+            editor.setModel(model);
+        };
+
+        const createDiffViewer = (lhsContent, rhsContent) => {
+            var originalModel = monaco.editor.createModel(lhsContent, "text/html");
+            var modifiedModel = monaco.editor.createModel(rhsContent, "text/html");
+
+            var diffEditor = monaco.editor.createDiffEditor(document.getElementById('container'), {
+                language: 'html',
+                theme: 'vs-dark'
+            });
+            diffEditor.setModel({
+                original: originalModel,
+                modified: modifiedModel
+            });
+        };
+
+        require(["vs/editor/editor.main"], function () {
+            var urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.has('lhs') && urlParams.has('rhs')) {
+                const lhsUrl = decodeURIComponent(urlParams.get('lhs'));
+                const rhsUrl = decodeURIComponent(urlParams.get('rhs'));
+                let lhsContent, rhsContent;
+                fetch(lhsUrl).then((response) => {
+                    return response.text();
+                }).then((data) => {
+                    lhsContent = data;
+
+                    fetch(rhsUrl).then((response) => {
+                        return response.text();
+                    }).then((data) => {
+                        rhsContent = data;
+
+                        createDiffViewer(lhsContent, rhsContent);
+                    });
+                });
+            } else if (urlParams.has('content')) {
+                const contentUrl = decodeURIComponent(urlParams.get('content'));
+                fetch(contentUrl).then((response) => {
+                    return response.text();
+                }).then((data) => {
+                    createViewer(data);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
