@@ -232,15 +232,17 @@
                                             <p class="text-secondary mb-0"><%= capture.name %></p>
                                         </div>
                                     </td>
-                                    <% if (capture.result !== 'missing-capture') { -%>
-                                        <td class="p-1"><a href="<%= imageCapture ? `../screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../html/${capture.fileName}.html`)}` %>" target="_blank" data-lity>capture</a></td>
+                                    <td class="p-1">
+                                    <% if (!(capture.result === 'missing-capture' || (capture.result === undefined && data.jlt.discardMatchedCaptures))) { -%>
+                                        <a href="<%= imageCapture ? `../screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../html/${capture.fileName}.html`)}` %>" target="_blank" data-lity>capture</a>
                                     <% } -%>
+                                    </td>
                                     <% if (diffCapture) { -%>
                                         <% if (capture.result === 'different') { -%>
                                             <td class="p-1"><a href="<%= imageCapture ? `../reference-output/screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../reference-output/html/${capture.fileName}.html`)}` %>" target="_blank"  data-lity>reference</a></td>
                                         <% } else if (capture.result === 'missing-reference') { -%>
                                             <td class="p-1">missing</td>
-                                        <% } else if (capture.result === 'missing-reference') { -%>
+                                        <% } else { -%>
                                             <td class="p-1">&nbsp;</td>
                                         <% } -%>
                                     <% } else { -%>

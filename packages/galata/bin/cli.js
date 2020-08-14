@@ -252,7 +252,8 @@ function generateHTMLReport(testId) {
             testId: testId,
             jlabUrl: sessionInfo.jlabBaseUrl,
             buildJlabVersion: sessionInfo.buildJlabVersion,
-            runtimeJlabVersion: sessionInfo.runtimeJlabVersion
+            runtimeJlabVersion: sessionInfo.runtimeJlabVersion,
+            discardMatchedCaptures: sessionInfo.discardMatchedCaptures
         }
     };
 
