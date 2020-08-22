@@ -10,7 +10,7 @@ Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it usi
 ## Compatibility
 Galata is compatible with `JupyterLab 2.1`. It communicates with the JupyterLab using the lab object exposed to browser window (`window.lab`). The lab object is accessible when JupyterLab is launched with `--dev-mode` flag.
 
-## build
+## Build
 lerna is required to build the project. Install lerna using
 ```
 npm install --global lerna
