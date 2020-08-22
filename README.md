@@ -4,6 +4,8 @@ Galata is a JupyterLab UI Testing Framework that provides:
 - **Testing Tools** for capture, comparison and report generation
 - **[Command-line Interface (jlt)](packages/galata/bin/cli.js)** to manage tests, references and additional tasks
 
+## Architectural Overview
+Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `jlt` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
 ## Compatibility
 Galata is compatible with `JupyterLab 2.1`. It communicates with the JupyterLab using the lab object exposed to browser window (`window.lab`). The lab object is accessible when JupyterLab is launched with `--dev-mode` flag.
@@ -42,7 +44,16 @@ Notes:
 2. For boolean typed arguments, a value of `true` doesn't need to be specified and they can be negated by adding `no-` as prefix. For example: `jlt --result-server` is same as `jlt --result-server true`. Also, `jlt --no-result-server` is same as `jlt --result-server false`.
 
 
-Arguments:
+#### **Usage**
+
+    $ jlt <test_files> <options>
+
+    <test_files>: Optional. Regular expression pattern to match test files to run. Has the same properties as --test-path-pattern option described below.
+
+    <options>: Optional. List of arguments as described below.
+
+#### **Options**
+
 - **--chrome-url**: Chrome Browser remote debugging URL
 
     If specified, Galata connects to Chrome using this URL, instead of launching a new Chrome instance.
@@ -171,30 +182,44 @@ Arguments:
 
 - **--launch-result-server**: Launch result file server for a test
 
-    Launches result server for a previously run test, so that test result output and report can be accessed from a URL. By default opens test result report as well. When its value is set to `latest` it finds the latest run test in `{output-dir}` by sorting them by name. This way of sorting works well if `test-id`s are set using the default logic of date time based id format. A test id can be set as the value of this argument (`--launch-result-server {test-id}`), and in that case result server will be serving test output for that particular test's results.
+    Launches result server for a previously run test, so that test result output and report can be accessed from a URL. By default opens test result report as well. When its value is set to `latest` it finds the latest run test in `{output-dir}` by sorting them by name. This way of sorting works well if `test-id`s are set using the default logic of date time based id format. A test id can be set as the value of this argument (`--launch-result-server {test-id}`), and in that case result server will be serving test output for that particular test's results. Skips test execution.
 
     *Default*: `latest`
 
 - **--update-references**: Update reference files from a test's output
 
-    Updates reference files using a previous run's output files. It doesn't remove existing reference files, but replaces if a reference file with same name exists. Images from `{test-id}/screenshots` are copied into `{reference-dir}/screenshots` and HTML files from `{test-id}/html` are copied into `{reference-dir}/html`. A test id can be set as the value of this argument (`--update-references {test-id}`). Default value is `latest` and same logic is used as described in `--launch-result-server` to find the latest test run.
+    Updates reference files using a previous run's output files. It doesn't remove existing reference files, but replaces if a reference file with same name exists. Images from `{test-id}/screenshots` are copied into `{reference-dir}/screenshots` and HTML files from `{test-id}/html` are copied into `{reference-dir}/html`. A test id can be set as the value of this argument (`--update-references {test-id}`). Default value is `latest` and same logic is used as described in `--launch-result-server` to find the latest test run. Skips test execution.
 
     *Default*: `latest`
 
 - **--delete-references**: Flag to delete all reference files
 
-    Deletes all reference files in `{reference-dir}`.
+    Deletes all reference files in `{reference-dir}`. Skips test execution.
 
     *Default*: `false`
 
 - **--help**: Show usage information
 
-    Shows usage information with list of all command-line options
+    Shows usage information with list of all command-line options. Skips test execution.
 
 - **--version**: Show version information
 
-    Shows version information of command-line tool
+    Shows version information of command-line tool. Skips test execution.
 
+```
+Examples
+
+    $ jlt --jlab-base-url http://localhost:8888
+    $ jlt --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+    $ jlt ./ui-tests/*.test.ts
+    $ jlt --exclude contents
+    $ jlt --include notebook,contents
+    $ jlt --include [notebook,contents]
+    $ jlt --launch-result-server
+    $ jlt --launch-result-server --no-open-report
+    $ jlt --delete-references
+    $ jlt --update-references 2020-08-22_14-01-30
+```
 
 ## Acknowledgement
 Development of this project began under [Bloomberg](https://github.com/bloomberg) organization, then it was transferred to [JupyterLab](https://github.com/jupyterlab) organization. We gratefully acknowledge **Bloomberg** for the generous contribution and supporting open-source software community.
