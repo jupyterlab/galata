@@ -287,6 +287,9 @@ function generateHTMLReport(testId) {
             testsBasePath = path.normalize(path.join(testsBasePath, '/')).replace(/\\/g, "\\\\");
             const re = new RegExp(testsBasePath, 'g');
 
+            const referenceSrcDir = path.resolve(process.cwd(), cli.flags.referenceDir);
+            const referenceDstDir = `${testOutputDir}/reference-output`;
+
             data.jlt = {...data.jlt, ...{ logs: getSessionLogs() }};
 
             data.testResults.forEach((testResult) => {
@@ -307,6 +310,27 @@ function generateHTMLReport(testId) {
                         const testName = ar.title;
                         if (captures[suiteName]) {
                             ar.captures = captures[suiteName][testName];
+                            if (Array.isArray(ar.captures)) {
+                                for (const c of ar.captures) {
+                                    // if there was a diff, copy reference to test output directory
+                                    if (c.type === 'image-diff' || c.type === 'html-diff') {
+                                        let typeDir, ext;
+                                        if (c.type === 'image-diff') {
+                                            typeDir = 'screenshots';
+                                            ext = 'png';
+                                        } else {
+                                            typeDir = 'html';
+                                            ext = 'html';
+                                        }
+                                        const fileName = `${c.fileName}.${ext}`;
+                                        const srcFilePath = path.join(referenceSrcDir, typeDir, fileName);
+                                        const dstFilePath = path.join(referenceDstDir, typeDir, fileName);
+                                        if (fs.existsSync(srcFilePath)) {
+                                            fs.copyFileSync(srcFilePath, dstFilePath);
+                                        }
+                                    }
+                                }
+                            }
                         }
                         if (logs[suiteName]) {
                             ar.logs = logs[suiteName][testName];
@@ -532,7 +556,8 @@ function runTests() {
     fs.mkdirSync(testOutputDir, { recursive: true });
     fs.mkdirSync(`${testOutputDir}/screenshots/diff`, { recursive: true });
     fs.mkdirSync(`${testOutputDir}/html/diff`, { recursive: true });
-    fs.symlinkSync(path.resolve(process.cwd(), cli.flags.referenceDir), `${testOutputDir}/reference-output`, 'junction');
+    fs.mkdirSync(`${testOutputDir}/reference-output/screenshots`, { recursive: true });
+    fs.mkdirSync(`${testOutputDir}/reference-output/html`, { recursive: true });
 
     flagsArray.push(`--testId=${testId}`);
     flagsArray.push(`--testOutputDir=${testOutputDir}`);

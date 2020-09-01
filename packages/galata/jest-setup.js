@@ -23,7 +23,7 @@ function getBuildJlabVersion() {
     const version = metadata['jlabVersion'];
     
     if (semver.valid(version)) {
-        log('info', `Using framework built for JupyterLab version ${version}`, { save: false });
+        log('info', `Using Galata built for JupyterLab version ${version}`, { save: false });
     } else {
         log('error', 'Failed to detect build-time JupyterLab version');
     }
