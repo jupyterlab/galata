@@ -14,9 +14,14 @@
   "files": [
     "*.{js,json,ejs}",
     "lib/src/**/*.{js,ts,map}",
-    "lib-inpage/*.js",
+    "lib-inpage/inpage.js",
     "bin/**/*.{js,json}",
-    "static/**/**"
+    "static/**/*.{css,js,map,svg}",
+    "!webpack.config.js",
+    "!tsconfig.json",
+    "!babel.config.js",
+    "!bin/buildutil.js",
+    "!lib-inpage/*.inpage.js"
   ],
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
