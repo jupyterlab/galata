@@ -198,14 +198,12 @@ namespace jlt {
         const testCaptures = suiteCaptures[_currentTest];
         const numCaptures = testCaptures.length;
 
-        // if same name and similar type (html / html-diff, image / image-diff)
-        // then replace
+        // if same name and type (html, image) then replace
         for (let c = 0; c < numCaptures; ++c) {
             const existingCapture = testCaptures[c];
-            if (existingCapture.name === capture.name &&
-                (capture.type.substr(0, 4) === existingCapture.type.substr(0, 4))) {
-                    testCaptures[c] = capture;
-                    return;
+            if (existingCapture.name === capture.name && capture.type === existingCapture.type) {
+                testCaptures[c] = capture;
+                return;
             }
         }
 
@@ -242,9 +240,11 @@ namespace jlt {
         async function screenshot(fileName: string, element: ElementHandle<Element> | null = null): Promise<boolean> {
             const fileNameSafe = _transformCaptureName(fileName);
             const filePath = `screenshots/${fileNameSafe}.png`;
-            logTestCapture({type: 'image', name: fileName, fileName: fileNameSafe});
             const options: puppeteer.ScreenshotOptions = {
                 path: `${context.testOutputDir}/${filePath}`
+            };
+            const logScreenshot = () => {
+                logTestCapture({type: 'image', name: fileName, fileName: fileNameSafe, result: 'uncompared'});
             };
 
             if (element) {
@@ -255,10 +255,12 @@ namespace jlt {
             
                 if (rect.width > 0 && rect.height > 0) {
                     await element.screenshot(options);
+                    logScreenshot();
                     return true;
                 }
             } else {
                 await context.page.screenshot(options);
+                logScreenshot();
                 return true;
             }
 
@@ -292,7 +294,7 @@ namespace jlt {
 
             if (result) {
                 logTestCapture({
-                    type: 'image-diff',
+                    type: 'image',
                     name: fileName,
                     fileName: fileNameSafe,
                     result: result
@@ -313,28 +315,29 @@ namespace jlt {
                 diff = Number.MAX_SAFE_INTEGER;
             }
             if (diff > 0) {
-                result = 'different'
+                result = 'different';
                 const diffPath = `screenshots/diff/${fileNameSafe}.png`;
                 fs.writeFileSync(`${context.testOutputDir}/${diffPath}`, PNG.sync.write(diffImage));
-                logTestCapture({
-                    type: 'image-diff',
-                    name: fileName,
-                    fileName: fileNameSafe,
-                    result: result
-                });
-                return result;
+            } else {
+                result = 'same';
+                removeMatchedCapture();
             }
 
-            removeMatchedCapture();
+            logTestCapture({
+                type: 'image',
+                name: fileName,
+                fileName: fileNameSafe,
+                result: result
+            });
 
-            return 'same';
+            return result;
         }
 
         export
         async function captureHTML(fileName: string, element: ElementHandle<Element> | null = null): Promise<string> {
             const fileNameSafe = _transformCaptureName(fileName);
             const filePath = `html/${fileNameSafe}.html`;
-            logTestCapture({type: 'html', name: fileName, fileName: fileNameSafe});
+            logTestCapture({type: 'html', name: fileName, fileName: fileNameSafe, result: 'uncompared'});
 
             let result: string;
 
@@ -378,7 +381,7 @@ namespace jlt {
 
             if (result) {
                 logTestCapture({
-                    type: 'html-diff',
+                    type: 'html',
                     name: fileName,
                     fileName: fileNameSafe,
                     result: result
@@ -389,21 +392,22 @@ namespace jlt {
             const referenceContent = fs.readFileSync(`${context.referenceDir}/${referencePath}`);
             const testContent = fs.readFileSync(`${context.testOutputDir}/${filePath}`);
             if (testContent.compare(referenceContent) !== 0) {
-                result = 'different'
+                result = 'different';
                 const diffPath = `${context.testOutputDir}/html/diff/${fileNameSafe}.html`;
-                fs.writeFileSync(diffPath, testContent);
-                logTestCapture({
-                    type: 'html-diff',
-                    name: fileName,
-                    fileName: fileNameSafe,
-                    result: result
-                });
-                return result;
+                fs.writeFileSync(diffPath, 'different');
+            } else {
+                result = 'same';
+                removeMatchedCapture();
             }
 
-            removeMatchedCapture();
+            logTestCapture({
+                type: 'html',
+                name: fileName,
+                fileName: fileNameSafe,
+                result: result
+            });
 
-            return 'same';
+            return result;
         }
     }
 

@@ -4,10 +4,10 @@
 import * as puppeteer from 'puppeteer-core';
 
 export
-type CaptureType = 'image' | 'image-diff' | 'html' | 'html-diff';
+type CaptureType = 'image' | 'html';
 
 export
-type CaptureCompareResult = 'missing-capture' | 'missing-reference' | 'different' | 'same';
+type CaptureCompareResult = 'uncompared' | 'missing-capture' | 'missing-reference' | 'different' | 'same';
 
 export
 interface ICapture {

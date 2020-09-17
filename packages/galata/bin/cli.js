@@ -313,9 +313,9 @@ function generateHTMLReport(testId) {
                             if (Array.isArray(ar.captures)) {
                                 for (const c of ar.captures) {
                                     // if there was a diff, copy reference to test output directory
-                                    if (c.type === 'image-diff' || c.type === 'html-diff') {
+                                    if (c.result !== 'same') {
                                         let typeDir, ext;
-                                        if (c.type === 'image-diff') {
+                                        if (c.type === 'image') {
                                             typeDir = 'screenshots';
                                             ext = 'png';
                                         } else {

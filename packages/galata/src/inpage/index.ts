@@ -283,7 +283,7 @@ export class JLabTestInpage implements IJlabTestInpage {
                         }
                     }
                     numTries++;
-                }
+                };
 
                 checkIfDone();
 
