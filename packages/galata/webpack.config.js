@@ -16,6 +16,7 @@ module.exports = {
     optimization: {
         minimize: false
     },
+    devtool: 'source-map',
     module: {
         rules: [
             { test: /\.ts$/, use: ['ts-loader',] },
@@ -24,7 +25,8 @@ module.exports = {
             { test: /\.txt$/, use: 'raw-loader' },
             {
                 test: /\.js$/,
-                enforce: 'pre'
+                enforce: 'pre',
+                use: ["source-map-loader"],
             },
             { test: /\.(jpg|png|gif)$/, use: 'file-loader' },
             { test: /\.js.map$/, use: 'file-loader' },
@@ -47,7 +49,7 @@ module.exports = {
             { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, use: 'file-loader' },
             {
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                issuer: { test: /\.css$/ },
+                issuer: /\.css$/,
                 use: {
                     loader: 'svg-url-loader',
                     options: { encoding: 'none', limit: 10000 }
@@ -55,7 +57,7 @@ module.exports = {
             },
             {
                 test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-                issuer: { test: /\.js$/ },
+                issuer: /\.js$/,
                 use: {
                     loader: 'raw-loader'
                 }
