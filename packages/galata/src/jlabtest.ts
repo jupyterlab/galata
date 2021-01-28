@@ -746,7 +746,8 @@ namespace jlt {
             const request: AxiosRequestConfig = {
                 url: `${apiUrl}/${fileName}`,
                 method: 'PUT',
-                data: data
+                data: data,
+                maxContentLength: Infinity
             };
 
             if (context.jlabToken) {
