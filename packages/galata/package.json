@@ -7,6 +7,7 @@
     "build:inpage": "webpack --mode=production",
     "build:jlt": "tsc",
     "save-jlab-version": "node ./bin/buildutil.js --save-jlab-version",
+    "enforce-version-match": "node ./bin/buildutil.js --enforce-version-match",
     "build": "npm run clean && npm run save-jlab-version && npm run build:inpage && npm run build:jlt",
     "prepublishOnly": "npm run build",
     "test": "node ./bin/cli.js"
