@@ -30,7 +30,7 @@ function xpContainsClass(className: string): string {
 
 export class JLabTestInpage implements IJlabTestInpage {
     constructor() {
-        this._app = window.lab;
+        this._app = window.jupyterlab;
     }
 
     async getPlugin<K extends keyof IPluginNameToInterfaceMap>(pluginId: K): Promise<IPluginNameToInterfaceMap[K] | undefined> {

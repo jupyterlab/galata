@@ -15,7 +15,7 @@ import {
 
 declare global {
     interface Window {
-        lab: JupyterFrontEnd;
+        jupyterlab: JupyterFrontEnd;
         jltip: IJlabTestInpage;
         screenshot: (fileName: string) => Promise<void>;
     }

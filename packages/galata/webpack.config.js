@@ -1,7 +1,8 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-var path = require('path');
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
     entry: './src/inpage/index.ts',
@@ -64,4 +65,10 @@ module.exports = {
             }
         ]
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            'process.env': '{}',
+            process: { cwd: () => '/' }
+        })
+    ]
 }

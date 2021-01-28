@@ -8,7 +8,7 @@ Galata is a JupyterLab UI Testing Framework that provides:
 Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `jlt` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
 ## Compatibility
-Galata is compatible with `JupyterLab 2.1`. It communicates with the JupyterLab using the lab object exposed to browser window (`window.lab`). The lab object is accessible when JupyterLab is launched with `--dev-mode` flag.
+Galata is compatible with `JupyterLab 3`. It communicates with the JupyterLab using the *jupyterlab: JupyterFrontEnd* object exposed to browser window (`window.jupyterlab`). The *jupyterlab: JupyterFrontEnd* object is accessible when JupyterLab is launched with `--expose-app-in-browser` flag.
 
 ## Build
 lerna is required to build the project. Install lerna using
@@ -24,7 +24,7 @@ lerna run build
 
 For tests to be run, a JupyterLab instance must be up and running. Launch it without credentials. Tests expect to connect JupyterLab from `localhost:8888` by default. If a different URL is to be used, it can be specified using Galata's `--jlab-base-url` command line argument.
 ```
-jupyter lab --dev-mode --no-browser --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.disable_check_xsrf='True'
+jupyter lab --expose-app-in-browser --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.disable_check_xsrf='True'
 ```
 
 Galata uses `Headless Chrome` browser to launch JupyterLab and runs tests in. Chrome can be launched by Galata automatically. On Mac and Windows, Chrome is launched from default install locations. Chrome executable path can be specified using `--chrome-path` command line parameter as well.

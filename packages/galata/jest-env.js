@@ -46,12 +46,37 @@ class PuppeteerEnvironment extends NodeEnvironment {
         super(config);
     }
 
+    /*
+    * Wait for window.jupyterlab object to be available or until maxWait
+    */
+    async waitForJupyterLabAppObject(maxWait = 5000) {
+        const context = this.global.__TEST_CONTEXT__;
+        const checkPeriod = 200;
+
+        return new Promise((resolve) => {
+            const maxWaitTimeout = setTimeout(() => { resolve(); }, maxWait);
+            const checkInterval = setInterval(async () => {
+                const jupyterlabDefined = await context.page.evaluate(() => {
+                    return typeof window.jupyterlab === 'object';
+                });
+
+                if (jupyterlabDefined) {
+                    log('info', 'jupyterlabDefined',  { save: false });
+                    clearTimeout(maxWaitTimeout);
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, checkPeriod);
+        });
+    }
+
     async openJLab() {
         const context = this.global.__TEST_CONTEXT__;
         try {
             await context.page.goto(context.jlabUrl, {
                 waitUntil: ['domcontentloaded'],
             });
+            await this.waitForJupyterLabAppObject();
         } catch (error) {
             logAndExit('error', `Failed to connect to JupyterLab URL "${context.jlabUrl}". Error message: ${error}`);
         }

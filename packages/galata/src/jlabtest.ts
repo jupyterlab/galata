@@ -416,14 +416,14 @@ namespace jlt {
         export
         async function isAnyRunning(): Promise<boolean> {
             return await context.page.evaluate(() => {
-                return window.lab.serviceManager.sessions.running().next() !== undefined;
+                return window.jupyterlab.serviceManager.sessions.running().next() !== undefined;
             });
         }
 
         export
         async function shutdownAll(): Promise<void> {
             await context.page.evaluate(async () => {
-                await window.lab.serviceManager.sessions.shutdownAll();
+                await window.jupyterlab.serviceManager.sessions.shutdownAll();
             });
 
             await waitFor(async () => {
@@ -565,7 +565,7 @@ namespace jlt {
             const launcherSelector = xpBuildActivityTabSelector('Launcher');
 
             await context.page.evaluate(async (launcherSelector) => {
-                const app = window.lab;
+                const app = window.jupyterlab;
 
                 const it = app.shell.widgets('main');
                 let widget = it.next();
@@ -827,7 +827,7 @@ namespace jlt {
         export
         async function waitForAPIResponse(trigger?: () => Promise<void> | void) {
             const page = context.page;
-            return new Promise(async (resolve, reject) => {
+            return new Promise<void>(async (resolve, reject) => {
                 page.on('response', function callback(response) {
                     if (response.url().includes("api/contents")) {
                         page.removeListener('response', callback);
