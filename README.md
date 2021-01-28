@@ -22,7 +22,7 @@ lerna bootstrap --hoist
 lerna run build
 ```
 
-For tests to be run, a JupyterLab instance must be up and running. Launch it without credentials. Tests expect to connect JupyterLab from `localhost:8888` by default. If a different URL is to be used, it can be specified using Galata's `--jlab-base-url` command line argument.
+For tests to be run, a JupyterLab instance must be up and running. Launch it without credentials. Tests expect to connect JupyterLab from `localhost:8888` by default. If a different URL is to be used, it can be specified using Galata's `--jlab-base-url` command line argument. If your tests are modifying files (upload / rename / delete), or taking captures that include file explorer then it is suggested to launch JupyterLab from inside an empty directory.
 ```
 jupyter lab --expose-app-in-browser --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.disable_check_xsrf='True'
 ```
@@ -31,7 +31,12 @@ Galata uses `Headless Chrome` browser to launch JupyterLab and runs tests in. Ch
 Galata can also connect to Chrome via a remote debugging URL. It can be specified using `--chrome-url`.
 
 ## Running tests
-There are two projects in this mono-repo. `galata` core project and `galata-example` project which is a boilerplate project that shows how `galata` can be integrated into a node project. Both of these projects contain some test suites that serve as unit tests and examples. You can run them using `lerna run test` or `npm run test` in each project's root directory.
+There are two projects in this mono-repo. `galata` core project and `galata-example` project which is a boilerplate project that shows how `galata` can be integrated into a node project. Both of these projects contain some test suites that serve as unit tests and examples. You can run them using `lerna run test` or `npm run test` in each project's root directory. It is suggested to run tests in each projects directory as below. Otherwise you need to run `lerna run test --stream` to see detailed result of each test in a test suite.
+
+```
+cd packages/galata
+npm run test
+```
 
 ## Configuration
 Galata can be configured by using command line arguments or using `jltconfig.json` file. Full list of config options can be accessed using `jlt --help` (or `./node_modules/.bin/jlt --help` for a local installation). An example of config files is at [packages/galata/jltconfig.json](packages/galata/jltconfig.json)
