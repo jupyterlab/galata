@@ -107,17 +107,17 @@ namespace jlt {
 
     export
     function xpBuildActivityTabSelector(name: string): string {
-        return `//div[${xpContainsClass('jp-Activity')}]/ul/li[${xpContainsClass('p-TabBar-tab')} and ./div[text()="${name}" and ${xpContainsClass('p-TabBar-tabLabel')}]]`;
+        return `//div[${xpContainsClass('jp-Activity')}]/ul/li[${xpContainsClass('lm-TabBar-tab')} and ./div[text()="${name}" and ${xpContainsClass('lm-TabBar-tabLabel')}]]`;
     }
 
     export
     function xpBuildActivityPanelSelector(id: string): string {
-        return `//div[@id='${id}' and ${xpContainsClass('jp-Activity')} and ${xpContainsClass('p-DockPanel-widget')}]`;
+        return `//div[@id='${id}' and ${xpContainsClass('jp-Activity')} and ${xpContainsClass('lm-DockPanel-widget')}]`;
     }
 
     export
     function xpBuildActiveActivityTabSelector(): string {
-        return `//div[${xpContainsClass('jp-Activity')}]/ul/li[${xpContainsClass('p-TabBar-tab')} and ${xpContainsClass('p-mod-current')} and ./div[${xpContainsClass('p-TabBar-tabLabel')}]]`;
+        return `//div[${xpContainsClass('jp-Activity')}]/ul/li[${xpContainsClass('lm-TabBar-tab')} and ${xpContainsClass('lm-mod-current')} and ./div[${xpContainsClass('lm-TabBar-tabLabel')}]]`;
     }
 
     export
@@ -437,21 +437,21 @@ namespace jlt {
         export
         async function closeAll() {
             const page = context.page;
-            const existingMenus = await page.$$('.p-Menu');
+            const existingMenus = await page.$$('.lm-Menu');
             const numOpenMenus = existingMenus.length;
             // close menus
             for (let i = 0; i < numOpenMenus; ++i) {
                 await page.keyboard.press('Escape');
                 await page.waitFor(100);
                 await page.waitForFunction((menuCount: number) => {
-                    return document.querySelectorAll('.p-Menu').length === menuCount;
+                    return document.querySelectorAll('.lm-Menu').length === menuCount;
                 }, {}, numOpenMenus - (i + 1));
             }
         }
 
         export
         async function getMenuBarItem(label: string): Promise<ElementHandle<Element> | null> {
-            const items = await context.page.$x(`//li[./div[text()="${label}" and ${xpContainsClass('p-MenuBar-itemLabel')}]]`);
+            const items = await context.page.$x(`//li[./div[text()="${label}" and ${xpContainsClass('lm-MenuBar-itemLabel')}]]`);
             return items.length > 0 ? items[0] : null;
         }
 
@@ -470,9 +470,9 @@ namespace jlt {
                         return menuItem;
                     } else {
                         if (i === 0) {
-                            subMenu = await page.$('.p-Menu.p-MenuBar-menu');
+                            subMenu = await page.$('.lm-Menu.lm-MenuBar-menu');
                         } else {
-                            const newMenus = await page.$$('.p-Menu');
+                            const newMenus = await page.$$('.lm-Menu');
                             subMenu = newMenus.length > 0 ? newMenus[newMenus.length - 1] : null;
                         }
                         if (!subMenu) {
@@ -489,7 +489,7 @@ namespace jlt {
 
         export
         async function getMenuItemInMenu(parentMenu: ElementHandle<Element>, label: string): Promise<ElementHandle<Element> | null> {
-            const items = await parentMenu.$x(`./ul/li[./div[text()="${label}" and ${xpContainsClass('p-Menu-itemLabel')}]]`);
+            const items = await parentMenu.$x(`./ul/li[./div[text()="${label}" and ${xpContainsClass('lm-Menu-itemLabel')}]]`);
             if (items.length > 1) {
                 throw new Error(`More than one menu item matches label '${label}'`);
             }
@@ -498,7 +498,7 @@ namespace jlt {
 
         export
         async function isAnyOpen(): Promise<boolean> {
-            return await context.page.$('.p-Menu') !== null;
+            return await context.page.$('.lm-Menu') !== null;
         }
 
         export
@@ -521,18 +521,18 @@ namespace jlt {
                 if (menuItem) {
                     if (i === 0) {
                         await menuItem.click();
-                        subMenu = await page.waitForSelector('.p-Menu.p-MenuBar-menu', { visible: true });
+                        subMenu = await page.waitForSelector('.lm-Menu.lm-MenuBar-menu', { visible: true });
                     } else {
-                        const existingMenus = await page.$$('.p-Menu');
+                        const existingMenus = await page.$$('.lm-Menu');
                         await menuItem.hover();
                         await page.waitForFunction((menuCount: number, menuItem: Element) => {
-                            return document.querySelectorAll('.p-Menu').length === menuCount && menuItem.classList.contains('p-mod-active');
+                            return document.querySelectorAll('.lm-Menu').length === menuCount && menuItem.classList.contains('lm-mod-active');
                         }, {}, existingMenus.length + 1, menuItem);
                         await page.waitFor(200);
 
                         // Fetch a new list of menus, and fetch the last one.
                         // We are assuming the last menu is the most recently opened.
-                        const newMenus = await page.$$('.p-Menu');
+                        const newMenus = await page.$$('.lm-Menu');
                         subMenu = newMenus[newMenus.length - 1];
                     }
                 }
@@ -581,7 +581,7 @@ namespace jlt {
         export
         async function isTabActive(name: string): Promise<boolean> {
             const tab = await getTab(name);
-            return tab && await tab.evaluate((tab) => tab.classList.contains('p-mod-current'));
+            return tab && await tab.evaluate((tab) => tab.classList.contains('lm-mod-current'));
         }
 
         export
@@ -629,9 +629,9 @@ namespace jlt {
         async function logCount(): Promise<number> {
             return await context.page.evaluate(() => {
                 let count = 0;
-                const logPanels = document.querySelectorAll('.jp-LogConsolePanel .p-StackedPanel-child');
+                const logPanels = document.querySelectorAll('.jp-LogConsolePanel .lm-StackedPanel-child');
                 logPanels.forEach((logPanel) => {
-                    if (!logPanel.classList.contains('p-mod-hidden')) {
+                    if (!logPanel.classList.contains('lm-mod-hidden')) {
                         count += logPanel.querySelectorAll('.jp-OutputArea-child').length;
                     }
                 });
@@ -1344,7 +1344,7 @@ namespace jlt {
                 return true;
             }
 
-            const label = await activeTab.$('div.p-TabBar-tabLabel');
+            const label = await activeTab.$('div.lm-TabBar-tabLabel');
             if (!label) {
                 return false;
             }
@@ -1394,13 +1394,13 @@ namespace jlt {
     namespace sidebar {
         export
         async function isOpen(): Promise<boolean> {
-            const activeTab = await context.page.$('.p-TabBar.jp-SideBar .p-TabBar-content .p-mod-current');
+            const activeTab = await context.page.$('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current');
             return activeTab !== null;
         }
 
         export
         async function isTabOpen(id: SidebarTabId): Promise<boolean> {
-            const tabButton = await context.page.$(`.p-TabBar.jp-SideBar .p-TabBar-content li.p-TabBar-tab.p-mod-current[data-id="${id}"]`);
+            const tabButton = await context.page.$(`.lm-TabBar.jp-SideBar .lm-TabBar-content li.lm-TabBar-tab.lm-mod-current[data-id="${id}"]`);
             return tabButton !== null;
         }
 
@@ -1426,7 +1426,7 @@ namespace jlt {
 
         export
         async function getTab(id: SidebarTabId): Promise<ElementHandle<Element>> {
-            return await context.page.$(`.p-TabBar-content li.p-TabBar-tab[data-id="${id}"]`);
+            return await context.page.$(`.lm-TabBar-content li.lm-TabBar-tab[data-id="${id}"]`);
         }
 
         export
@@ -1436,7 +1436,7 @@ namespace jlt {
                 return;
             }
 
-            const tabButton = await context.page.$(`.p-TabBar.jp-SideBar .p-TabBar-content li.p-TabBar-tab[data-id="${id}"]`);
+            const tabButton = await context.page.$(`.lm-TabBar.jp-SideBar .lm-TabBar-content li.lm-TabBar-tab[data-id="${id}"]`);
             await tabButton.click();
             await _waitForTabActivate(tabButton);
         }
@@ -1451,7 +1451,7 @@ namespace jlt {
             await menu.clickMenuItem('View>Show Left Sidebar');
 
             await context.page.waitForFunction(() => {
-                return document.querySelector('.p-TabBar.jp-SideBar .p-TabBar-content .p-mod-current') !== null;
+                return document.querySelector('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current') !== null;
             });
         }
 
@@ -1465,13 +1465,13 @@ namespace jlt {
             await menu.clickMenuItem('View>Show Left Sidebar');
 
             await context.page.waitForFunction(() => {
-                return document.querySelector('.p-TabBar.jp-SideBar .p-TabBar-content .p-mod-current') === null;
+                return document.querySelector('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current') === null;
             });
         }
 
         async function _waitForTabActivate(tab: ElementHandle<Element>, activate: boolean = true) {
             await context.page.waitForFunction((tab: Element, activate: boolean) => {
-                const current = tab.classList.contains('p-mod-current');
+                const current = tab.classList.contains('lm-mod-current');
                 return activate ? current : !current;
             }, {}, tab, activate);
         }
