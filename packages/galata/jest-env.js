@@ -13,10 +13,10 @@ const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo } = requ
 const sessionInfo = getSessionInfo();
 const config = getConfig();
 
-function logAndExit(type, message, code = 1) {
+function logAndThrow(type, message, code = 1) {
     log(type, message);
     saveLogsToFile('jest-logs.json');
-    process.exit(code);
+    throw new Error(message);
 }
 
 async function checkJupyterLabVersion(page) {
@@ -46,14 +46,38 @@ class PuppeteerEnvironment extends NodeEnvironment {
         super(config);
     }
 
+    /*
+    * Wait for window.jupyterlab object to be available or until maxWait
+    */
+    async waitForJupyterLabAppObject(maxWait = 5000) {
+        const context = this.global.__TEST_CONTEXT__;
+        const checkPeriod = 200;
+
+        return new Promise((resolve) => {
+            const maxWaitTimeout = setTimeout(() => { resolve(); }, maxWait);
+            const checkInterval = setInterval(async () => {
+                const jupyterlabDefined = await context.page.evaluate(() => {
+                    return typeof window.jupyterlab === 'object';
+                });
+
+                if (jupyterlabDefined) {
+                    clearTimeout(maxWaitTimeout);
+                    clearInterval(checkInterval);
+                    resolve();
+                }
+            }, checkPeriod);
+        });
+    }
+
     async openJLab() {
         const context = this.global.__TEST_CONTEXT__;
         try {
             await context.page.goto(context.jlabUrl, {
                 waitUntil: ['domcontentloaded'],
             });
+            await this.waitForJupyterLabAppObject();
         } catch (error) {
-            logAndExit('error', `Failed to connect to JupyterLab URL "${context.jlabUrl}". Error message: ${error}`);
+            logAndThrow('error', `Failed to connect to JupyterLab URL "${context.jlabUrl}". Error message: ${error}`);
         }
     }
 
@@ -66,7 +90,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         });
 
         if (!jltipDefined) {
-            logAndExit('error', 'Failed to inject jltip object into browser context');
+            logAndThrow('error', 'Failed to inject jltip object into browser context');
         }
 
         const jlabAccessible = await context.page.evaluate(async () => {
@@ -74,7 +98,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         });
 
         if (!jlabAccessible) {
-            logAndExit('error', 'Failed to access JupyterLab object in browser context');
+            logAndThrow('error', 'Failed to access JupyterLab object in browser context');
         }
 
         let resourcePath = '/lab';
@@ -147,9 +171,10 @@ class PuppeteerEnvironment extends NodeEnvironment {
                 browserWSEndpoint: sessionInfo.wsEndpoint
             });
         } catch {
-            log('error', `Failed to connect to browser using wsEndpoint ${sessionInfo.wsEndpoint}`);
+            const message = `Failed to connect to browser using wsEndpoint ${sessionInfo.wsEndpoint}`;
+            log('error', message);
             saveLogsToFile('jest-logs.json');
-            process.exit(1);
+            throw new Error(message);
         }
 
         this.global.__TEST_CONTEXT__ = {

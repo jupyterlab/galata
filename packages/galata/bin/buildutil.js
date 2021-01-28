@@ -13,6 +13,7 @@ const cli = meow(`
 
     Options
       --save-jlab-version       save JupyterLab version into metadata
+      --enforce-version-match   enforce matching Galata and JupyterLab versions
 
     Other options:
       --help                    show usage information
@@ -23,6 +24,10 @@ const cli = meow(`
 `, {
     flags: {
         saveJlabVersion: {
+            type: 'boolean',
+            default: false
+        },
+        enforceVersionMatch: {
             type: 'boolean',
             default: false
         }
@@ -64,4 +69,33 @@ if (cli.flags.saveJlabVersion) {
     console.log(`JupyterLab version: ${jlabVersion}`);
 
     addToMetadata({ jlabVersion: jlabVersion });
+}
+
+if (cli.flags.enforceVersionMatch) {
+    const packageFilePath = path.resolve(__dirname, '../package.json');
+    const packageFileData = fs.existsSync(packageFilePath) ? fs.readJSONSync(packageFilePath) : undefined;
+    if (!packageFileData) {
+        console.log('package.json not found!');
+        process.exit(1);
+    }
+
+    const galataVersion = packageFileData['version'];
+    
+    const metadataFilePath = path.resolve(__dirname, './metadata.json');
+    let metadata = {};
+    if (fs.existsSync(metadataFilePath)) {
+        try {
+            metadata = fs.readJSONSync(metadataFilePath);
+        } catch {
+        }
+    }
+
+    const jlabVersion = metadata['jlabVersion'];
+
+    if (!(typeof galataVersion === 'string' && typeof jlabVersion === 'string' && galataVersion === jlabVersion)) {
+        console.log(`Galata package version ${galataVersion} doesn't match target JupyterLab version ${jlabVersion}`);
+        process.exit(1);
+    }
+
+    process.exit(0);
 }
