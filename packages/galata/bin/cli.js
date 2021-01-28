@@ -254,7 +254,8 @@ function generateHTMLReport(testId) {
             buildJlabVersion: sessionInfo.buildJlabVersion,
             runtimeJlabVersion: sessionInfo.runtimeJlabVersion,
             discardMatchedCaptures: sessionInfo.discardMatchedCaptures
-        }
+        },
+        testResults: []
     };
 
     if (fs.existsSync(jestOutputPath)) {
