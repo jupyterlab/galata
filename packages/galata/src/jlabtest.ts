@@ -874,7 +874,11 @@ namespace jlt {
     namespace filebrowser {
         export
         function xpBuildFileSelector(fileName: string) {
-            return `//div[@id='filebrowser']//li[./span[text()="${fileName}" and ${xpContainsClass('jp-DirListing-itemText')}]]`;
+            return `//div[@id='filebrowser']//li[./span[${xpContainsClass('jp-DirListing-itemText')} and ./span[text()="${fileName}"]]]`;
+        }
+        export
+        function xpBuildDirectorySelector(dirName: string) {
+            return `//div[@id='filebrowser']//li[@data-isdir='true' and ./span[${xpContainsClass('jp-DirListing-itemText')} and ./span[text()="${dirName}"]]]`;
         }
 
         export
@@ -981,7 +985,7 @@ namespace jlt {
         }
 
         async function _openDirectory(dirName: string): Promise<boolean> {
-            const items = await context.page.$x(`//div[@id='filebrowser']//li[@data-isdir='true' and ./span[text()="${dirName}" and ${xpContainsClass('jp-DirListing-itemText')}]]`);
+            const items = await context.page.$x(xpBuildDirectorySelector(dirName));
             if (items.length !== 1) {
                 return false;
             }

@@ -4,7 +4,7 @@
 import { jlt, describe, test } from '../src/index';
 import * as path from 'path';
 
-jest.setTimeout(10000);
+jest.setTimeout(60000);
 
 describe('Contents API Tests', () => {
     beforeAll(async () => {
