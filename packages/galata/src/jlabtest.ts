@@ -1409,6 +1409,8 @@ namespace jlt {
                 for (let widgetId of Object.keys(overrides)) {
                     overrides[widgetId] = 'left';
                 }
+                // default location of property inspector is right, move it to left during tests
+                overrides["jp-property-inspector"] = "left";
                 await settingRegistry.set(SIDEBAR_ID, 'overrides', overrides);
             }, PLUGIN_ID_SETTINGS);
 
