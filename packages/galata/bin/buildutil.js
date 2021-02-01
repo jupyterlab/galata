@@ -6,6 +6,7 @@
 const meow = require('meow');
 const fs = require('fs-extra');
 const path = require('path');
+const semver = require('semver');
 
 const cli = meow(`
     Usage
@@ -92,7 +93,11 @@ if (cli.flags.enforceVersionMatch) {
 
     const jlabVersion = metadata['jlabVersion'];
 
-    if (!(typeof galataVersion === 'string' && typeof jlabVersion === 'string' && galataVersion === jlabVersion)) {
+    if (!semver.valid(galataVersion) || !semver.valid(jlabVersion) ||
+        semver.major(galataVersion) !== semver.major(jlabVersion) ||
+        semver.minor(galataVersion) !== semver.minor(jlabVersion) ||
+        semver.patch(galataVersion) !== semver.patch(jlabVersion)
+    ) {
         console.log(`Galata package version ${galataVersion} doesn't match target JupyterLab version ${jlabVersion}`);
         process.exit(1);
     }
