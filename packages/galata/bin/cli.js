@@ -138,10 +138,16 @@ const cli = meow(`
         },
         chromePath: {
             type: 'string',
-            default: config.chromePath ||
-                (os.platform() == 'win32' ?
-                    'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe' :
-                    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
+            default: config.chromePath || ((() => {
+                const platform = os.platform();
+                if (platform === 'win32') {
+                    return 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe';
+                } else if (platform === 'linux') {
+                    return '/usr/bin/chromium';
+                } else {
+                    return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+                }
+            })())
         },
         chromeUrl: {
             type: 'string',
