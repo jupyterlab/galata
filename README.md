@@ -4,6 +4,8 @@ Galata is a JupyterLab UI Testing Framework that provides:
 - **Testing Tools** for capture, comparison and report generation
 - **[Command-line Interface (jlt)](packages/galata/bin/cli.js)** to manage tests, references and additional tasks
 
+![screencast](https://user-images.githubusercontent.com/591645/106258563-4882ba80-621e-11eb-8997-8545a462a6fb.gif)
+
 ## Architectural Overview
 Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `jlt` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
