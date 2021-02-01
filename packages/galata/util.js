@@ -127,4 +127,10 @@ function getSessionInfo() {
     return sessionInfo;
 }
 
-module.exports = { getConfig, saveSessionInfo, getSessionInfo, log, getLogs, saveLogsToFile, getSavedLogs };
+async function waitForDuration(duration) {
+    return new Promise((resolve) => {
+        setTimeout(() => { resolve(); }, duration);
+    });
+}
+
+module.exports = { getConfig, saveSessionInfo, getSessionInfo, log, getLogs, saveLogsToFile, getSavedLogs, waitForDuration };

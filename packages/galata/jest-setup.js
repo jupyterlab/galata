@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const axios = require('axios');
 const semver = require('semver');
-const { getConfig, log, saveLogsToFile, saveSessionInfo } = require('./util');
+const { getConfig, log, saveLogsToFile, saveSessionInfo, waitForDuration } = require('./util');
 
 const config = getConfig();
 
@@ -30,14 +30,14 @@ function getBuildJlabVersion() {
     return version;
 }
 
-function saveLogsAndExit(code = 1) {
-    saveLogsToFile('jest-logs.json');
-    process.exit(code);
-}
-
-function logAndExit(type, message, code = 1) {
+async function logAndExit(type, message, code = 1) {
     log(type, message);
-    saveLogsAndExit(code);
+    saveLogsToFile('jest-logs.json');
+    
+    // wait for stdio to flush so that logs are visible on console
+    await waitForDuration(1000);
+
+    process.exit(code);
 }
 
 module.exports = async function () {
@@ -59,7 +59,7 @@ module.exports = async function () {
                 slowMo: slowMo
             });
         } catch {
-            logAndExit('error', `Failed to connect to remote Chrome at "${config.chromeUrl}"`);
+            await logAndExit('error', `Failed to connect to remote Chrome at "${config.chromeUrl}"`);
         }
     } else {
         if (fs.existsSync(config.chromePath)) {
@@ -77,10 +77,10 @@ module.exports = async function () {
                     slowMo: slowMo
                 });
             } catch {
-                logAndExit('error', `Failed to launch headless browser from "${config.chromePath}"`);
+                await logAndExit('error', `Failed to launch headless browser from "${config.chromePath}"`);
             }
         } else {
-            logAndExit('error', `Chrome executable not found at path "${config.chromePath}"`);
+            await logAndExit('error', `Chrome executable not found at path "${config.chromePath}"`);
         }
     }
 

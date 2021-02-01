@@ -7,16 +7,20 @@ const path = require('path');
 const puppeteer = require('puppeteer-core');
 const semver = require('semver');
 const { v4: uuidv4 } = require('uuid');
-const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo } = require('./util');
+const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo, waitForDuration } = require('./util');
 
 
 const sessionInfo = getSessionInfo();
 const config = getConfig();
 
-function logAndThrow(type, message, code = 1) {
+async function logAndExit(type, message, code = 1) {
     log(type, message);
     saveLogsToFile('jest-logs.json');
-    throw new Error(message);
+
+    // wait for stdio to flush so that logs are visible on console
+    await waitForDuration(1000);
+
+    process.exit(code);
 }
 
 async function checkJupyterLabVersion(page) {
@@ -77,7 +81,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
             });
             await this.waitForJupyterLabAppObject();
         } catch (error) {
-            logAndThrow('error', `Failed to connect to JupyterLab URL "${context.jlabUrl}". Error message: ${error}`);
+            await logAndExit('error', `Failed to connect to JupyterLab URL "${context.jlabUrl}". Error message: ${error}`);
         }
     }
 
@@ -90,7 +94,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         });
 
         if (!jltipDefined) {
-            logAndThrow('error', 'Failed to inject jltip object into browser context');
+            await logAndExit('error', 'Failed to inject jltip object into browser context');
         }
 
         const jlabAccessible = await context.page.evaluate(async () => {
@@ -98,7 +102,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         });
 
         if (!jlabAccessible) {
-            logAndThrow('error', 'Failed to access JupyterLab object in browser context');
+            await logAndExit('error', 'Failed to access JupyterLab object in browser context');
         }
 
         let resourcePath = '/lab';
