@@ -33,4 +33,5 @@ jobs:
     - name: Test
       run: |
         cd packages/galata
-        npm run test
+        which chromium
+        npm run test -- --chrome-path /usr/bin/chromium
