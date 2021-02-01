@@ -228,5 +228,8 @@ Examples
     $ jlt --update-references 2020-08-22_14-01-30
 ```
 
+## Versioning
+Galata package is versioned with the same major, minor and patch versions as the JupyterLab it is made for. For example, if Galata is based on JupyterLab 3.0.1, a valid Galata version is 3.0.1-1 to 3.0.1-n. This version matching is enforced before Galata packages are published, for consistency.
+
 ## Acknowledgement
 Development of this project began under [Bloomberg](https://github.com/bloomberg) organization, then it was transferred to [JupyterLab](https://github.com/jupyterlab) organization. We gratefully acknowledge **Bloomberg** for the generous contribution and supporting open-source software community.
