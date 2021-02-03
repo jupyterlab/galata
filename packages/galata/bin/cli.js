@@ -13,7 +13,10 @@ const dateformat = require('dateformat');
 const AnsiUp = require('ansi_up').default;
 const inquirer = require('inquirer');
 const os = require('os');
+const { v4: uuidv4 } = require('uuid');
 const { getSessionInfo, log, getLogs, getSavedLogs } = require('../util');
+const selfDir = path.resolve(__dirname);
+const cwd = process.cwd();
 
 const configFileData = fs.existsSync('./jltconfig.json') ? fs.readFileSync('./jltconfig.json') : undefined;
 let config = configFileData ? JSON.parse(configFileData) : {};
@@ -290,11 +293,11 @@ function generateHTMLReport(testId) {
             const captures = jltOutput['captures'];
             const logs = jltOutput['logs'];
             const ansiUp = new AnsiUp();
-            let testsBasePath = process.cwd();
+            let testsBasePath = cwd;
             testsBasePath = path.normalize(path.join(testsBasePath, '/')).replace(/\\/g, "\\\\");
             const re = new RegExp(testsBasePath, 'g');
 
-            const referenceSrcDir = path.resolve(process.cwd(), cli.flags.referenceDir);
+            const referenceSrcDir = path.resolve(cwd, cli.flags.referenceDir);
             const referenceDstDir = `${testOutputDir}/reference-output`;
 
             data.jlt = {...data.jlt, ...{ logs: getSessionLogs() }};
@@ -517,6 +520,18 @@ function getCLIScriptPath(scriptName, scriptDir, maxDepth = 10) {
         return scriptPath;
     } else {
         if (maxDepth === 0) {
+            // check under Galata package installation
+            const scriptDirUnderGalata = path.join(selfDir, '../node_modules', scriptName, 'bin').normalize();
+            if (fs.existsSync(scriptDirUnderGalata)) {
+                const binaryExecutable = path.join(scriptDirUnderGalata, scriptName);
+                if (fs.existsSync(binaryExecutable)) {
+                    return binaryExecutable;
+                }
+                const jsExecutable = path.join(scriptDirUnderGalata, `${scriptName}.js`);
+                if (fs.existsSync(jsExecutable)) {
+                    return jsExecutable;
+                }
+            }
             return undefined;
         } else {
             return getCLIScriptPath(scriptName, scriptDir, --maxDepth);
@@ -530,6 +545,28 @@ function getJestPath() {
     }
 
     return getCLIScriptPath('jest');
+}
+
+function getJestConfigPath() {
+    if (cli.flags.jestConfig !== '') {
+        return { path: cli.flags.jestConfig, temp: false };
+    }
+
+    // create a temporary config file at CWD
+    const tmpConfigPath = path.join(cwd, `${uuidv4()}.js`);
+    const configUnderGalata = path.join(selfDir, '../jest.config.js').normalize();
+    // jest expects relative path
+    let configRelative = path.relative(cwd, configUnderGalata);
+    if (!configRelative.startsWith('.')) {
+        configRelative = `./${configRelative}`;
+    }
+    const content = `
+    module.exports = {
+        preset: '${configRelative}'
+    };
+    `;
+    fs.writeFileSync(tmpConfigPath, content);
+    return { path: tmpConfigPath, temp: true };
 }
 
 function getHttpServerPath() {
@@ -575,14 +612,19 @@ function runTests() {
         process.exit(1);
     }
     const jestDefaults = ['--verbose', '--runInBand', '--json', `--outputFile=${jestOutputPath}`];
+    const jestConfig = getJestConfigPath();
 
-    if (cli.flags.jestConfig !== '') {
-        jestDefaults.push('--config', cli.flags.jestConfig);
+    if (jestConfig.path !== '') {
+        jestDefaults.push('--config', jestConfig.path);
     }
 
     const run = spawn.sync(jestPath, [...cli.input, ...jestDefaults, ...flagsArray], {
         stdio: [process.stdin, process.stdout, process.stderr]
     });
+
+    if (jestConfig.temp) {
+        fs.unlinkSync(jestConfig.path);
+    }
 
     generateHTMLReport(testId);
 
