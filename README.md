@@ -2,12 +2,12 @@
 Galata is a JupyterLab UI Testing Framework that provides:
 - **[Rich High Level API](packages/galata/src/jlabtest.ts)** to control and inspect JupyterLab UI programmatically
 - **Testing Tools** for capture, comparison and report generation
-- **[Command-line Interface (jlt)](packages/galata/bin/cli.js)** to manage tests, references and additional tasks
+- **[Command-line Interface (galata)](packages/galata/bin/cli.js)** to manage tests, references and additional tasks
 
 ![screencast](https://user-images.githubusercontent.com/591645/106258563-4882ba80-621e-11eb-8997-8545a462a6fb.gif)
 
 ## Architectural Overview
-Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `jlt` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
+Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `galata` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
 ## Compatibility
 Galata is compatible with `JupyterLab 3`. It communicates with the JupyterLab using the *jupyterlab: JupyterFrontEnd* object exposed to browser window (`window.jupyterlab`). The *jupyterlab: JupyterFrontEnd* object is accessible when JupyterLab is launched with `--expose-app-in-browser` flag.
@@ -41,19 +41,19 @@ npm run test
 ```
 
 ## Configuration
-Galata can be configured by using command line arguments or using `jltconfig.json` file. Full list of config options can be accessed using `jlt --help` (or `./node_modules/.bin/jlt --help` for a local installation). An example of config files is at [packages/galata/jltconfig.json](packages/galata/jltconfig.json)
+Galata can be configured by using command line arguments or using `jltconfig.json` file. Full list of config options can be accessed using `galata --help` (or `./node_modules/.bin/galata --help` for a local installation). An example of config files is at [packages/galata/jltconfig.json](packages/galata/jltconfig.json)
 
 ## Command-line Options
-Galata provides a command-line interface (`jlt`) to manage tests, references and execute additional tasks. Below is the list of these command-line arguments that can be passed to `jlt` with detailed information on each.
+Galata provides a command-line interface (`galata`) to manage tests, references and execute additional tasks. Below is the list of these command-line arguments that can be passed to `galata` with detailed information on each.
 
 Notes:
-1. Argument values can be set using a space between name and value, or an equal sign in-between. For example: `jlt --result-server true` is same as `jlt --result-server=true`.
-2. For boolean typed arguments, a value of `true` doesn't need to be specified and they can be negated by adding `no-` as prefix. For example: `jlt --result-server` is same as `jlt --result-server true`. Also, `jlt --no-result-server` is same as `jlt --result-server false`.
+1. Argument values can be set using a space between name and value, or an equal sign in-between. For example: `galata --result-server true` is same as `galata --result-server=true`.
+2. For boolean typed arguments, a value of `true` doesn't need to be specified and they can be negated by adding `no-` as prefix. For example: `galata --result-server` is same as `galata --result-server true`. Also, `galata --no-result-server` is same as `galata --result-server false`.
 
 
 #### **Usage**
 
-    $ jlt <test_files> <options>
+    $ galata <test_files> <options>
 
     <test_files>: Optional. Regular expression pattern to match test files to run. Has the same properties as --test-path-pattern option described below.
 
@@ -147,7 +147,7 @@ Notes:
 
 - **--output-dir**: Result output directory
 
-    Directory to output test results. Each `jlt` run produces several test output files including test captures and report files. They are stored in `{output-dir}/{test-id}` directory
+    Directory to output test results. Each `galata` run produces several test output files including test captures and report files. They are stored in `{output-dir}/{test-id}` directory
 
     *Default*: `./test-output`
 
@@ -216,16 +216,16 @@ Notes:
 ```
 Examples
 
-    $ jlt --jlab-base-url http://localhost:8888
-    $ jlt --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
-    $ jlt ./ui-tests/*.test.ts
-    $ jlt --exclude contents
-    $ jlt --include notebook,contents
-    $ jlt --include [notebook,contents]
-    $ jlt --launch-result-server
-    $ jlt --launch-result-server --no-open-report
-    $ jlt --delete-references
-    $ jlt --update-references 2020-08-22_14-01-30
+    $ galata --jlab-base-url http://localhost:8888
+    $ galata --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+    $ galata ./ui-tests/*.test.ts
+    $ galata --exclude contents
+    $ galata --include notebook,contents
+    $ galata --include [notebook,contents]
+    $ galata --launch-result-server
+    $ galata --launch-result-server --no-open-report
+    $ galata --delete-references
+    $ galata --update-references 2020-08-22_14-01-30
 ```
 
 ## Versioning

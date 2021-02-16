@@ -65,7 +65,7 @@ function testWrapper(name: string, fn?: jest.ProvidesCallback, timeout?: number)
 }
 
 export
-namespace jlt {
+namespace galata {
     function _base64EncodeFile(filePath: string) {
         const content = fs.readFileSync(filePath);
         return content.toString('base64');

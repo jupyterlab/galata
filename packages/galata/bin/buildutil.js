@@ -10,7 +10,7 @@ const semver = require('semver');
 
 const cli = meow(`
     Usage
-      $ jlt-buildutil <options>
+      $ galata-buildutil <options>
 
     Options
       --save-jlab-version       save JupyterLab version into metadata
@@ -21,7 +21,7 @@ const cli = meow(`
       --version                 show version information
 
     Examples
-      $ jlt-buildutil --save-jlab-version
+      $ galata-buildutil --save-jlab-version
 `, {
     flags: {
         saveJlabVersion: {

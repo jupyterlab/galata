@@ -203,7 +203,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
     }
 
     async teardown() {
-        const filePath = path.join(sessionInfo.testOutputDir, 'jlt-output.json');
+        const filePath = path.join(sessionInfo.testOutputDir, 'galata-output.json');
         let data = { captures: {}, logs: {} };
         if (fs.existsSync(filePath)) {
             try {

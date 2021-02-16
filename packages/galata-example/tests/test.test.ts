@@ -1,16 +1,16 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-import { jlt, describe, test } from '@jupyterlab/galata';
+import { galata, describe, test } from '@jupyterlab/galata';
 
 describe('A Test Suite', () => {
     beforeAll(async () => {
-        await jlt.resetUI();
-        jlt.context.capturePrefix = 'suite';
+        await galata.resetUI();
+        galata.context.capturePrefix = 'suite';
     });
 
     afterAll(() => {
-        jlt.context.capturePrefix = '';
+        galata.context.capturePrefix = '';
     });
     
     test('A test', () => {
