@@ -18,7 +18,7 @@ const { getSessionInfo, log, getLogs, getSavedLogs } = require('../util');
 const selfDir = path.resolve(__dirname);
 const cwd = process.cwd();
 
-const configFileData = fs.existsSync('./jltconfig.json') ? fs.readFileSync('./jltconfig.json') : undefined;
+const configFileData = fs.existsSync('./galata-config.json') ? fs.readFileSync('./galata-config.json') : undefined;
 let config = configFileData ? JSON.parse(configFileData) : {};
 let testOutputDir, jestOutputPath;
 
@@ -29,7 +29,7 @@ const startTime = new Date();
 
 const cli = meow(`
     Usage
-      $ jlt <test_files> <options>
+      $ galata <test_files> <options>
 
     Options
       --chrome-url                Chrome Browser remote debugging URL
@@ -63,12 +63,12 @@ const cli = meow(`
       --version                   show version information
 
     Examples
-      $ jlt --jlab-base-url http://localhost:8888
-      $ jlt --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
-      $ jlt ./ui-tests/*.test.ts
-      $ jlt --exclude contents
-      $ jlt --include [notebook,contents]
-      $ jlt --launch-result-server
+      $ galata --jlab-base-url http://localhost:8888
+      $ galata --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+      $ galata ./ui-tests/*.test.ts
+      $ galata --exclude contents
+      $ galata --include [notebook,contents]
+      $ galata --launch-result-server
 `, {
     flags: {
         jlabBaseUrl: {
@@ -257,7 +257,7 @@ function generateHTMLReport(testId) {
 
     let data = {
         startTime: startTime.getTime(),
-        jlt: {
+        galata: {
             testId: testId,
             jlabUrl: sessionInfo.jlabBaseUrl,
             buildJlabVersion: sessionInfo.buildJlabVersion,
@@ -278,20 +278,20 @@ function generateHTMLReport(testId) {
         log('error', 'jest output not found');
     }
 
-    const jltOutputPath = path.join(testOutputDir, 'jlt-output.json');
+    const galataOutputPath = path.join(testOutputDir, 'galata-output.json');
 
-    if (fs.existsSync(jltOutputPath)) {
-        let jltOutput;
+    if (fs.existsSync(galataOutputPath)) {
+        let galataOutput;
         try {
-            jltOutput = fs.readJsonSync(jltOutputPath);
-            data = { ...data, ...jltOutput };
+            galataOutput = fs.readJsonSync(galataOutputPath);
+            data = { ...data, ...galataOutput };
         } catch {
-            log('error', 'Failed to parse jlt output');
+            log('error', 'Failed to parse galata output');
         }
 
-        if (jltOutput) {
-            const captures = jltOutput['captures'];
-            const logs = jltOutput['logs'];
+        if (galataOutput) {
+            const captures = galataOutput['captures'];
+            const logs = galataOutput['logs'];
             const ansiUp = new AnsiUp();
             let testsBasePath = cwd;
             testsBasePath = path.normalize(path.join(testsBasePath, '/')).replace(/\\/g, "\\\\");
@@ -300,7 +300,7 @@ function generateHTMLReport(testId) {
             const referenceSrcDir = path.resolve(cwd, cli.flags.referenceDir);
             const referenceDstDir = `${testOutputDir}/reference-output`;
 
-            data.jlt = {...data.jlt, ...{ logs: getSessionLogs() }};
+            data.galata = {...data.galata, ...{ logs: getSessionLogs() }};
 
             data.testResults.forEach((testResult) => {
                 // convert to relative path
@@ -350,8 +350,8 @@ function generateHTMLReport(testId) {
             });
         }
     } else {
-        log('error', 'jlt output not found');
-        data.jlt = {...data.jlt, ...{ logs: getSessionLogs() }};
+        log('error', 'galata output not found');
+        data.galata = {...data.galata, ...{ logs: getSessionLogs() }};
     }
 
     fs.copySync(path.resolve(__dirname, '../static'), `${testOutputDir}/report`);

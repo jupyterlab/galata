@@ -10,7 +10,7 @@ import {
 } from '@jupyterlab/notebook';
 
 import {
-    IJlabTestInpage,
+    IGalataInpage,
     INotebookRunCallback,
     IWaitForSelectorOptions,
     IPluginNameToInterfaceMap,
@@ -28,7 +28,7 @@ function xpContainsClass(className: string): string {
     return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
 }
 
-export class JLabTestInpage implements IJlabTestInpage {
+export class GalataInpage implements IGalataInpage {
     constructor() {
         this._app = window.jupyterlab;
     }
@@ -363,4 +363,4 @@ export class JLabTestInpage implements IJlabTestInpage {
     private _app: JupyterFrontEnd;
 }
 
-window.jltip = new JLabTestInpage();
+window.galataip = new GalataInpage();

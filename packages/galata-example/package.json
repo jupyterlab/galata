@@ -4,7 +4,7 @@
   "description": "Galata Example",
   "private": true,
   "scripts": {
-    "test": "jlt"
+    "test": "galata"
   },
   "author": "Mehmet Bektas <mbektas@bloomberg.net>",
   "license": "BSD-3-Clause",

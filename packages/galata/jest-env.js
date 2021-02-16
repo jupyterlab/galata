@@ -27,7 +27,7 @@ async function checkJupyterLabVersion(page) {
     const buildJlabVersion = sessionInfo.buildJlabVersion;
 
     const runtimeJlabVersion = await page.evaluate(async () => {
-        return window.jltip.app.version;
+        return window.galataip.app.version;
     });
 
     if (semver.valid(runtimeJlabVersion)) {
@@ -89,16 +89,16 @@ class PuppeteerEnvironment extends NodeEnvironment {
         const context = this.global.__TEST_CONTEXT__;
         await context.page.addScriptTag({ path: path.resolve(__dirname, './lib-inpage/inpage.js') });
 
-        const jltipDefined = await context.page.evaluate(async () => {
-            return typeof window.jltip === 'object';
+        const galataipDefined = await context.page.evaluate(async () => {
+            return typeof window.galataip === 'object';
         });
 
-        if (!jltipDefined) {
-            await logAndExit('error', 'Failed to inject jltip object into browser context');
+        if (!galataipDefined) {
+            await logAndExit('error', 'Failed to inject galataip object into browser context');
         }
 
         const jlabAccessible = await context.page.evaluate(async () => {
-            return typeof window.jltip.app === 'object';
+            return typeof window.galataip.app === 'object';
         });
 
         if (!jlabAccessible) {
@@ -110,7 +110,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
             resourcePath = `${resourcePath}/workspaces/${context.jlabWorkspace}`;
         }
         await context.page.evaluate(async (resourcePath) => {
-            await window.jltip.waitForLaunch(resourcePath);
+            await window.galataip.waitForLaunch(resourcePath);
         }, resourcePath);
 
         if (!sessionInfo.runtimeJlabVersion) {
@@ -203,7 +203,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
     }
 
     async teardown() {
-        const filePath = path.join(sessionInfo.testOutputDir, 'jlt-output.json');
+        const filePath = path.join(sessionInfo.testOutputDir, 'galata-output.json');
         let data = { captures: {}, logs: {} };
         if (fs.existsSync(filePath)) {
             try {

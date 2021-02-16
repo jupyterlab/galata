@@ -181,7 +181,7 @@
 function isCaptureFileAvailable(capture) {
     const result = capture.result;
     return result === 'uncompared' || result === 'missing-reference' ||
-        result === 'different' || (result === 'same' && !data.jlt.discardMatchedCaptures);
+        result === 'different-size' || result === 'different' || (result === 'same' && !data.galata.discardMatchedCaptures);
 }
 %>
 <div class="page-container p-3">
@@ -239,7 +239,7 @@ function isCaptureFileAvailable(capture) {
                             <% ar.captures.forEach((capture) => { -%>
                                 <%
                                     const imageCapture = capture.type === 'image';
-                                    const failedCompare = capture.result === 'different' || capture.result === 'missing-reference' || capture.result === 'missing-capture';
+                                    const failedCompare = capture.result === 'different-size' || capture.result === 'different' || capture.result === 'missing-reference' || capture.result === 'missing-capture';
                                 %>
                                 <tr class="<%= failedCompare ? 'table-danger' : 'table-success' %>">
                                     <td class="p-1">
@@ -254,7 +254,7 @@ function isCaptureFileAvailable(capture) {
                                     <% } -%>
                                     </td>
                                     <% if (failedCompare) { -%>
-                                        <% if (capture.result === 'different') { -%>
+                                        <% if (capture.result === 'different-size' || capture.result === 'different') { -%>
                                             <td class="p-1"><a href="<%= imageCapture ? `../reference-output/screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../reference-output/html/${capture.fileName}.html`)}` %>" target="_blank"  data-lity>reference</a></td>
                                         <% } else if (capture.result === 'missing-reference') { -%>
                                             <td class="p-1">missing</td>
@@ -305,7 +305,7 @@ function isCaptureFileAvailable(capture) {
     <% } %>
 
     
-    <% if (data.jlt.logs && data.jlt.logs.length > 0) { %>
+    <% if (data.galata.logs && data.galata.logs.length > 0) { %>
         <h4 class="mt-5">Logs</h4>
         <table class="table captures-table">
             <thead>
@@ -314,7 +314,7 @@ function isCaptureFileAvailable(capture) {
                   <th scope="col" class="p-1">type</th>
                 </tr>
                 <tbody>
-                    <% data.jlt.logs.forEach((log) => { -%>
+                    <% data.galata.logs.forEach((log) => { -%>
                         <tr class="<%= log.type === 'error' ? 'table-danger' : log.type === 'warning' ? 'table-warning' : 'table-info' %>">
                             <td class="p-1"><%= log.message %></td>
                             <td class="p-1"><%= log.type %></td>
@@ -334,20 +334,20 @@ function isCaptureFileAvailable(capture) {
             </tr>
             <tr>
                 <th scope="row" class="p-1">Test Id:</th>
-                <td class="p-1"><%= data.jlt.testId %></td>
+                <td class="p-1"><%= data.galata.testId %></td>
             </tr>
             <% if (data.testResults) { %>
             <tr>
                 <th scope="row" class="p-1">JupyterLab URL:</th>
-                <td class="p-1"><%= data.jlt.jlabUrl %></td>
+                <td class="p-1"><%= data.galata.jlabUrl %></td>
             </tr>
             <tr>
                 <th scope="row" class="p-1">JupyterLab Version tested:</th>
-                <td class="p-1"><%= data.jlt.runtimeJlabVersion %></td>
+                <td class="p-1"><%= data.galata.runtimeJlabVersion %></td>
             </tr>
             <tr>
                 <th scope="row" class="p-1">JupyterLab Version of Testing API:</th>
-                <td class="p-1"><%= data.jlt.buildJlabVersion %></td>
+                <td class="p-1"><%= data.galata.buildJlabVersion %></td>
             </tr>
             <tr>
                 <th scope="row" class="p-1">Suites:</th>
