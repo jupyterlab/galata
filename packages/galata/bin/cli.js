@@ -18,7 +18,7 @@ const { getSessionInfo, log, getLogs, getSavedLogs } = require('../util');
 const selfDir = path.resolve(__dirname);
 const cwd = process.cwd();
 
-const configFileData = fs.existsSync('./jltconfig.json') ? fs.readFileSync('./jltconfig.json') : undefined;
+const configFileData = fs.existsSync('./galata-config.json') ? fs.readFileSync('./galata-config.json') : undefined;
 let config = configFileData ? JSON.parse(configFileData) : {};
 let testOutputDir, jestOutputPath;
 
@@ -278,20 +278,20 @@ function generateHTMLReport(testId) {
         log('error', 'jest output not found');
     }
 
-    const jltOutputPath = path.join(testOutputDir, 'galata-output.json');
+    const galataOutputPath = path.join(testOutputDir, 'galata-output.json');
 
-    if (fs.existsSync(jltOutputPath)) {
-        let jltOutput;
+    if (fs.existsSync(galataOutputPath)) {
+        let galataOutput;
         try {
-            jltOutput = fs.readJsonSync(jltOutputPath);
-            data = { ...data, ...jltOutput };
+            galataOutput = fs.readJsonSync(galataOutputPath);
+            data = { ...data, ...galataOutput };
         } catch {
             log('error', 'Failed to parse galata output');
         }
 
-        if (jltOutput) {
-            const captures = jltOutput['captures'];
-            const logs = jltOutput['logs'];
+        if (galataOutput) {
+            const captures = galataOutput['captures'];
+            const logs = galataOutput['logs'];
             const ansiUp = new AnsiUp();
             let testsBasePath = cwd;
             testsBasePath = path.normalize(path.join(testsBasePath, '/')).replace(/\\/g, "\\\\");

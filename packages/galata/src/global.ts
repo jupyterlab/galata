@@ -6,23 +6,23 @@ import {
 } from "@jupyterlab/application";
 
 import {
-    IJLabTestContext
+    IGalataContext
 } from "./tokens";
 
 import {
-    IJlabTestInpage
+    IGalataInpage
 } from "./inpage/tokens";
 
 declare global {
     interface Window {
         jupyterlab: JupyterFrontEnd;
-        jltip: IJlabTestInpage;
+        galataip: IGalataInpage;
         screenshot: (fileName: string) => Promise<void>;
     }
 
     namespace NodeJS {
         interface Global {
-            __TEST_CONTEXT__: IJLabTestContext;
+            __TEST_CONTEXT__: IGalataContext;
         }
     }
 }

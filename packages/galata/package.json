@@ -30,6 +30,7 @@
   "license": "BSD-3-Clause",
   "bin": {
     "galata": "bin/cli.js",
+    "glt": "bin/cli.js",
     "galata-buildutil": "bin/buildutil.js"
   },
   "dependencies": {

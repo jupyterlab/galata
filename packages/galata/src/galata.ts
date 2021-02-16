@@ -36,7 +36,7 @@ import {
 } from './inpage/tokens';
 
 import {
-    IJLabTestContext, CaptureCompareResult, ICapture, ITestLog, ICreateNewPageOptions
+    IGalataContext, CaptureCompareResult, ICapture, ITestLog, ICreateNewPageOptions
 } from './tokens';
 
 let _runCallbacksExposed: number = 0;
@@ -95,7 +95,7 @@ namespace galata {
     }
 
     export
-    const context: IJLabTestContext = global.__TEST_CONTEXT__;
+    const context: IGalataContext = global.__TEST_CONTEXT__;
 
     export
     type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'command-palette' | 'tab-manager';
@@ -574,7 +574,7 @@ namespace galata {
                     widget = it.next();
                 }
 
-                await window.jltip.waitForXPath(launcherSelector);
+                await window.galataip.waitForXPath(launcherSelector);
             }, launcherSelector);
         }
 
@@ -774,7 +774,7 @@ namespace galata {
         export
         async function deleteFile(filePath: string): Promise<boolean> {
             await context.page.evaluate(async (pluginId, filePath) => {
-                const docManager: IDocumentManager = await window.jltip.getPlugin(pluginId);
+                const docManager: IDocumentManager = await window.galataip.getPlugin(pluginId);
                 await docManager.deleteFile(filePath);
             }, PLUGIN_ID_DOC_MANAGER, filePath);
 
@@ -814,7 +814,7 @@ namespace galata {
         export
         async function renameFile(oldName: string, newName: string): Promise<boolean> {
             return await context.page.evaluate(async (pluginId, oldName, newName) => {
-                const docManager: IDocumentManager = await window.jltip.getPlugin(pluginId);
+                const docManager: IDocumentManager = await window.galataip.getPlugin(pluginId);
                 const result = await docManager.rename(oldName, newName);
                 return result != null;
             }, PLUGIN_ID_DOC_MANAGER, oldName, newName);
@@ -1053,13 +1053,13 @@ namespace galata {
         async function activate(name: string): Promise<boolean> {
             if (await activity.activateTab(name)) {
                 await context.page.evaluate(async () => {
-                    const jltip = window.jltip;
-                    const nbPanel = jltip.app.shell.currentWidget as NotebookPanel;
+                    const galataip = window.galataip;
+                    const nbPanel = galataip.app.shell.currentWidget as NotebookPanel;
                     await nbPanel.sessionContext.ready;
                     // Assuming that if the session is ready, the kernel is ready also for now and commenting out this line
                     // await nbPanel.session.kernel.ready;
 
-                    jltip.app.shell.activateById(nbPanel.id);
+                    galataip.app.shell.activateById(nbPanel.id);
                 });
 
                 return true;
@@ -1075,7 +1075,7 @@ namespace galata {
             }
 
             await context.page.evaluate(async () => {
-                await window.jltip.saveActiveNotebook();
+                await window.galataip.saveActiveNotebook();
             });
 
             return true;
@@ -1088,7 +1088,7 @@ namespace galata {
             }
 
             await context.page.evaluate(async () => {
-                const app = window.jltip.app;
+                const app = window.galataip.app;
                 const nbPanel = app.shell.currentWidget as NotebookPanel;
                 await nbPanel.context.revert();
             });
@@ -1153,7 +1153,7 @@ namespace galata {
                     }
                 } as INotebookRunCallback;
 
-                await window.jltip.runActiveNotebookCellByCell(callbacks);
+                await window.galataip.runActiveNotebookCellByCell(callbacks);
             }, callbackName);
 
             return true;
@@ -1162,7 +1162,7 @@ namespace galata {
         export
         async function waitForRun() {
             await context.page.evaluate(async () => {
-                await window.jltip.waitForNotebookRun();
+                await window.galataip.waitForNotebookRun();
             });
         }
 
@@ -1273,7 +1273,7 @@ namespace galata {
             }
 
             await context.page.evaluate(() => {
-                return window.jltip.deleteNotebookCells();
+                return window.galataip.deleteNotebookCells();
             });
 
             return true;
@@ -1286,7 +1286,7 @@ namespace galata {
             }
 
             return await context.page.evaluate((cellType, source) => {
-                return window.jltip.addNotebookCell(cellType, source);
+                return window.galataip.addNotebookCell(cellType, source);
             }, cellType, source);
         }
 
@@ -1297,7 +1297,7 @@ namespace galata {
             }
 
             return await context.page.evaluate((cellIndex, cellType, source) => {
-                return window.jltip.setNotebookCell(cellIndex, cellType, source);
+                return window.galataip.setNotebookCell(cellIndex, cellType, source);
             }, cellIndex, cellType, source);
         }
 
@@ -1364,7 +1364,7 @@ namespace galata {
         async function isVisible(): Promise<boolean> {
             return await context.page.evaluate(() => {
                 const statusBar = document.querySelector('#jp-main-statusbar') as HTMLElement;
-                return window.jltip.isElementVisible(statusBar);
+                return window.galataip.isElementVisible(statusBar);
             });
         }
 
@@ -1408,7 +1408,7 @@ namespace galata {
         export
         async function moveAllTabsToLeft(): Promise<void> {
             await context.page.evaluate(async (pluginId) => {
-                const settingRegistry: ISettingRegistry = await window.jltip.getPlugin(pluginId);
+                const settingRegistry: ISettingRegistry = await window.galataip.getPlugin(pluginId);
                 const SIDEBAR_ID = '@jupyterlab/application-extension:sidebar';
                 const overrides =  (await settingRegistry.get(SIDEBAR_ID, 'overrides')).composite;
                 for (let widgetId of Object.keys(overrides)) {

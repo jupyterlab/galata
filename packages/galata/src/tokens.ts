@@ -40,7 +40,7 @@ export
 type CreateNewPageFunction = (options?: ICreateNewPageOptions) => Promise<puppeteer.Page>;
 
 export
-interface IJLabTestContext {
+interface IGalataContext {
     testId: string;
     chromePath: string;
     jlabBaseUrl: string;

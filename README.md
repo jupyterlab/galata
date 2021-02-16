@@ -1,6 +1,6 @@
 # Galata
 Galata is a JupyterLab UI Testing Framework that provides:
-- **[Rich High Level API](packages/galata/src/jlabtest.ts)** to control and inspect JupyterLab UI programmatically
+- **[Rich High Level API](packages/galata/src/galata.ts)** to control and inspect JupyterLab UI programmatically
 - **Testing Tools** for capture, comparison and report generation
 - **[Command-line Interface (galata)](packages/galata/bin/cli.js)** to manage tests, references and additional tasks
 
@@ -41,7 +41,7 @@ npm run test
 ```
 
 ## Configuration
-Galata can be configured by using command line arguments or using `jltconfig.json` file. Full list of config options can be accessed using `galata --help` (or `./node_modules/.bin/galata --help` for a local installation). An example of config files is at [packages/galata/jltconfig.json](packages/galata/jltconfig.json)
+Galata can be configured by using command line arguments or using `galata-config.json` file. Full list of config options can be accessed using `galata --help` (or `./node_modules/.bin/galata --help` for a local installation). An example of config files is at [packages/galata/galata-config.json](packages/galata/galata-config.json)
 
 ## Command-line Options
 Galata provides a command-line interface (`galata`) to manage tests, references and execute additional tasks. Below is the list of these command-line arguments that can be passed to `galata` with detailed information on each.

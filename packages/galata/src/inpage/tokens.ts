@@ -40,7 +40,7 @@ interface IPluginNameToInterfaceMap {
 }
 
 export
-interface IJlabTestInpage {
+interface IGalataInpage {
     getPlugin<K extends keyof IPluginNameToInterfaceMap>(pluginId: K): Promise<IPluginNameToInterfaceMap[K] | undefined>;
     sleep(duration: number): Promise<void>;
     waitForLaunch(path?: string): Promise<void>;

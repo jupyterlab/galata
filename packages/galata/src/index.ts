@@ -2,6 +2,6 @@
 // Distributed under the terms of the Modified BSD License.
 
 export * from "./tokens";
-export * from "./jlabtest";
+export * from "./galata";
 export * from "./inpage/tokens";
 export * from "./global"
