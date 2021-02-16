@@ -12,6 +12,9 @@ Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it usi
 ## Compatibility
 Galata is compatible with `JupyterLab 3`. It communicates with the JupyterLab using the *jupyterlab: JupyterFrontEnd* object exposed to browser window (`window.jupyterlab`). The *jupyterlab: JupyterFrontEnd* object is accessible when JupyterLab is launched with `--expose-app-in-browser` flag.
 
+## Versioning
+Galata package is versioned with the same major, minor and patch versions as the JupyterLab it is made for. For example, if Galata is based on JupyterLab 3.0.1, a valid Galata version is 3.0.1-1 to 3.0.1-n. This version matching is enforced before Galata packages are published, for consistency.
+
 ## Build
 lerna is required to build the project. Install lerna using
 ```
@@ -227,9 +230,6 @@ Examples
     $ galata --delete-references
     $ galata --update-references 2020-08-22_14-01-30
 ```
-
-## Versioning
-Galata package is versioned with the same major, minor and patch versions as the JupyterLab it is made for. For example, if Galata is based on JupyterLab 3.0.1, a valid Galata version is 3.0.1-1 to 3.0.1-n. This version matching is enforced before Galata packages are published, for consistency.
 
 ## About Galata Name
 Galata framework is named after [Galata Tower](https://en.wikipedia.org/wiki/Galata_Tower) in Istanbul. Centuries ago, Galata Tower was used to spot fires in the city. Tower was also used as astronomical observatory in the past.

@@ -181,7 +181,7 @@
 function isCaptureFileAvailable(capture) {
     const result = capture.result;
     return result === 'uncompared' || result === 'missing-reference' ||
-        result === 'different' || (result === 'same' && !data.galata.discardMatchedCaptures);
+        result === 'different-size' || result === 'different' || (result === 'same' && !data.galata.discardMatchedCaptures);
 }
 %>
 <div class="page-container p-3">
@@ -239,7 +239,7 @@ function isCaptureFileAvailable(capture) {
                             <% ar.captures.forEach((capture) => { -%>
                                 <%
                                     const imageCapture = capture.type === 'image';
-                                    const failedCompare = capture.result === 'different' || capture.result === 'missing-reference' || capture.result === 'missing-capture';
+                                    const failedCompare = capture.result === 'different-size' || capture.result === 'different' || capture.result === 'missing-reference' || capture.result === 'missing-capture';
                                 %>
                                 <tr class="<%= failedCompare ? 'table-danger' : 'table-success' %>">
                                     <td class="p-1">
@@ -254,7 +254,7 @@ function isCaptureFileAvailable(capture) {
                                     <% } -%>
                                     </td>
                                     <% if (failedCompare) { -%>
-                                        <% if (capture.result === 'different') { -%>
+                                        <% if (capture.result === 'different-size' || capture.result === 'different') { -%>
                                             <td class="p-1"><a href="<%= imageCapture ? `../reference-output/screenshots/${capture.fileName}.png` : `viewer.html?content=${encodeURIComponent(`../reference-output/html/${capture.fileName}.html`)}` %>" target="_blank"  data-lity>reference</a></td>
                                         <% } else if (capture.result === 'missing-reference') { -%>
                                             <td class="p-1">missing</td>

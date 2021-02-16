@@ -305,6 +305,18 @@ namespace galata {
             const referenceImage = PNG.sync.read(fs.readFileSync(`${context.referenceDir}/${referencePath}`));
             const testImage = PNG.sync.read(fs.readFileSync(`${context.testOutputDir}/${filePath}`));
             const { width, height } = referenceImage;
+
+            if (testImage.width !== width || testImage.height !== height) {
+                result = 'different-size';
+                logTestCapture({
+                    type: 'image',
+                    name: fileName,
+                    fileName: fileNameSafe,
+                    result: result
+                });
+                return result;
+            }
+
             const threshold = context.imageMatchThreshold;
             const diffImage = new PNG({ width, height });
             let diff = 0;

@@ -7,7 +7,7 @@ export
 type CaptureType = 'image' | 'html';
 
 export
-type CaptureCompareResult = 'uncompared' | 'missing-capture' | 'missing-reference' | 'different' | 'same';
+type CaptureCompareResult = 'uncompared' | 'missing-capture' | 'missing-reference' | 'different-size' | 'different' | 'same';
 
 export
 interface ICapture {
