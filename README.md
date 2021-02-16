@@ -1,4 +1,4 @@
-# Galata
+# Galata[*](#about-galata-name)
 Galata is a JupyterLab UI Testing Framework that provides:
 - **[Rich High Level API](packages/galata/src/galata.ts)** to control and inspect JupyterLab UI programmatically
 - **Testing Tools** for capture, comparison and report generation
@@ -230,6 +230,9 @@ Examples
 
 ## Versioning
 Galata package is versioned with the same major, minor and patch versions as the JupyterLab it is made for. For example, if Galata is based on JupyterLab 3.0.1, a valid Galata version is 3.0.1-1 to 3.0.1-n. This version matching is enforced before Galata packages are published, for consistency.
+
+## About Galata Name
+Galata framework is named after [Galata Tower](https://en.wikipedia.org/wiki/Galata_Tower) in Istanbul. Centuries ago, Galata Tower was used to spot fires in the city. Tower was also used as astronomical observatory in the past.
 
 ## Acknowledgement
 Development of this project began under [Bloomberg](https://github.com/bloomberg) organization, then it was transferred to [JupyterLab](https://github.com/jupyterlab) organization. We gratefully acknowledge **Bloomberg** for the generous contribution and supporting open-source software community.
