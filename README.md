@@ -1,4 +1,12 @@
-# Galata[*](#about-galata-name) ![galata-logo](./media/galata-logo.svg)
+<h1 align="center">
+  <p align="center">Galata<a href="#about-galata-name">*</a></p>
+  <img
+      alt="Galata"
+      src="./media/galata-logo.svg"
+      width="150"
+    />
+</h1>
+
 Galata is a JupyterLab UI Testing Framework that provides:
 - **[Rich High Level API](packages/galata/src/galata.ts)** to control and inspect JupyterLab UI programmatically
 - **Testing Tools** for capture, comparison and report generation
