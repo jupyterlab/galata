@@ -1,7 +1,8 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer-core');
+const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs-extra');
 const axios = require('axios');
@@ -54,8 +55,8 @@ module.exports = async function () {
         try {
             const apiUrl = `${config.chromeUrl}/json/version`;
             const response = await axios.get(apiUrl);
-            browser = await puppeteer.connect({
-                browserWSEndpoint: response.data.webSocketDebuggerUrl,
+            browser = await chromium.connect({
+                wsEndpoint: response.data.webSocketDebuggerUrl,
                 slowMo: slowMo
             });
         } catch {
@@ -64,10 +65,10 @@ module.exports = async function () {
     } else {
         if (fs.existsSync(config.chromePath)) {
             try {
-                browser = await puppeteer.launch({
+                browser = await chromium.launchServer({
                     executablePath: config.chromePath,
                     headless: headless,
-                    args: ['-AppleMagnifiedMode', 'YES', `--window-size=${pageWidth},${pageHeight + 25}`],
+                    // args: ['-AppleMagnifiedMode', 'YES', `--window-size=${pageWidth},${pageHeight + 25}`],
                     ignoreDefaultArgs: ["--enable-automation"],
                     defaultViewport: {
                         width: pageWidth,

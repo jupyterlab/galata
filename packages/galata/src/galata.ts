@@ -1,11 +1,13 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-import * as puppeteer from 'puppeteer-core';
+// import * as puppeteer from 'puppeteer-core';
+import { Page } from 'playwright';
 
-import {
-    ElementHandle
-} from 'puppeteer-core';
+// import {
+//     ElementHandle
+// } from 'puppeteer-core';
+import { ElementHandle } from 'playwright';
 
 import {
     IDocumentManager
@@ -32,7 +34,7 @@ import {
 } from 'pngjs';
 
 import {
-    INotebookRunCallback, PLUGIN_ID_DOC_MANAGER, PLUGIN_ID_SETTINGS
+    INotebookRunCallback, IPluginNameToInterfaceMap, PLUGIN_ID_DOC_MANAGER, PLUGIN_ID_SETTINGS
 } from './inpage/tokens';
 
 import {
@@ -78,7 +80,7 @@ namespace galata {
         return fileName.toLowerCase().replace(/[^a-z0-9]+/gi, "_");
     }
 
-    async function _getElementClassList(element: puppeteer.JSHandle): Promise<string[]> {
+    async function _getElementClassList(element: ElementHandle): Promise<string[]> {
         if (!element) {
             return [];
         }
@@ -225,7 +227,7 @@ namespace galata {
     }
 
     export
-    function createNewPage(options?: ICreateNewPageOptions): Promise<puppeteer.Page> {
+    function createNewPage(options?: ICreateNewPageOptions): Promise<Page> {
         return context._createNewPage(options);
     }
 
@@ -240,7 +242,7 @@ namespace galata {
         async function screenshot(fileName: string, element: ElementHandle<Element> | null = null): Promise<boolean> {
             const fileNameSafe = _transformCaptureName(fileName);
             const filePath = `screenshots/${fileNameSafe}.png`;
-            const options: puppeteer.ScreenshotOptions = {
+            const options: any = {
                 path: `${context.testOutputDir}/${filePath}`
             };
             const logScreenshot = () => {
@@ -454,17 +456,16 @@ namespace galata {
             // close menus
             for (let i = 0; i < numOpenMenus; ++i) {
                 await page.keyboard.press('Escape');
-                await page.waitFor(100);
+                await page.waitForTimeout(100);
                 await page.waitForFunction((menuCount: number) => {
                     return document.querySelectorAll('.lm-Menu').length === menuCount;
-                }, {}, numOpenMenus - (i + 1));
+                }, numOpenMenus - (i + 1));
             }
         }
 
         export
         async function getMenuBarItem(label: string): Promise<ElementHandle<Element> | null> {
-            const items = await context.page.$x(`//li[./div[text()="${label}" and ${xpContainsClass('lm-MenuBar-itemLabel')}]]`);
-            return items.length > 0 ? items[0] : null;
+            return await context.page.$(`xpath=//li[./div[text()="${label}" and ${xpContainsClass('lm-MenuBar-itemLabel')}]]`);
         }
 
         export
@@ -501,7 +502,7 @@ namespace galata {
 
         export
         async function getMenuItemInMenu(parentMenu: ElementHandle<Element>, label: string): Promise<ElementHandle<Element> | null> {
-            const items = await parentMenu.$x(`./ul/li[./div[text()="${label}" and ${xpContainsClass('lm-Menu-itemLabel')}]]`);
+            const items = await parentMenu.$$(`xpath=./ul/li[./div[text()="${label}" and ${xpContainsClass('lm-Menu-itemLabel')}]]`);
             if (items.length > 1) {
                 throw new Error(`More than one menu item matches label '${label}'`);
             }
@@ -533,14 +534,14 @@ namespace galata {
                 if (menuItem) {
                     if (i === 0) {
                         await menuItem.click();
-                        subMenu = await page.waitForSelector('.lm-Menu.lm-MenuBar-menu', { visible: true });
+                        subMenu = await page.waitForSelector('.lm-Menu.lm-MenuBar-menu', { state: 'visible' });
                     } else {
                         const existingMenus = await page.$$('.lm-Menu');
                         await menuItem.hover();
-                        await page.waitForFunction((menuCount: number, menuItem: Element) => {
+                        await page.waitForFunction(({menuCount, menuItem}) => {
                             return document.querySelectorAll('.lm-Menu').length === menuCount && menuItem.classList.contains('lm-mod-active');
-                        }, {}, existingMenus.length + 1, menuItem);
-                        await page.waitFor(200);
+                        }, {menuCount: existingMenus.length + 1, menuItem: menuItem});
+                        await page.waitForTimeout(200);
 
                         // Fetch a new list of menus, and fetch the last one.
                         // We are assuming the last menu is the most recently opened.
@@ -599,8 +600,8 @@ namespace galata {
         export
         async function getTab(name?: string): Promise<ElementHandle<Element> | null> {
             const page = context.page;
-            const items = await page.$x(name ? xpBuildActivityTabSelector(name) : xpBuildActiveActivityTabSelector());
-            return items.length === 1 ? items[0] : null;
+            const tabSelector = name ? xpBuildActivityTabSelector(name) : xpBuildActiveActivityTabSelector();
+            return await page.$(`xpath=${tabSelector}`);
         }
 
         export
@@ -609,11 +610,7 @@ namespace galata {
             const tab = await getTab(name);
             if (tab) {
                 const id = await tab.evaluate((tab) => tab.getAttribute('data-id'));
-                const items = await page.$x(xpBuildActivityPanelSelector(id));
-
-                if (items.length === 1) {
-                    return items[0];
-                }
+                return await page.$(`xpath=${xpBuildActivityPanelSelector(id)}`);
             }
 
             return null;
@@ -624,9 +621,9 @@ namespace galata {
             const tab = await getTab(name);
             if (tab) {
                 await tab.click();
-                await context.page.waitForFunction((tab: Element) => {
+                await context.page.waitForFunction(({tab}) => {
                     return tab.classList.contains('jp-mod-current');
-                }, {}, tab);
+                }, {tab});
 
                 return true;
             }
@@ -785,10 +782,10 @@ namespace galata {
 
         export
         async function deleteFile(filePath: string): Promise<boolean> {
-            await context.page.evaluate(async (pluginId, filePath) => {
-                const docManager: IDocumentManager = await window.galataip.getPlugin(pluginId);
+            await context.page.evaluate(async ({pluginId, filePath}) => {
+                const docManager = await window.galataip.getPlugin(pluginId) as IDocumentManager;
                 await docManager.deleteFile(filePath);
-            }, PLUGIN_ID_DOC_MANAGER, filePath);
+            }, {pluginId: PLUGIN_ID_DOC_MANAGER as keyof IPluginNameToInterfaceMap, filePath: filePath});
 
             return true;
         }
@@ -825,11 +822,11 @@ namespace galata {
 
         export
         async function renameFile(oldName: string, newName: string): Promise<boolean> {
-            return await context.page.evaluate(async (pluginId, oldName, newName) => {
-                const docManager: IDocumentManager = await window.galataip.getPlugin(pluginId);
+            return await context.page.evaluate(async ({pluginId, oldName, newName}) => {
+                const docManager = await window.galataip.getPlugin(pluginId) as IDocumentManager;
                 const result = await docManager.rename(oldName, newName);
                 return result != null;
-            }, PLUGIN_ID_DOC_MANAGER, oldName, newName);
+            }, {pluginId: PLUGIN_ID_DOC_MANAGER as keyof IPluginNameToInterfaceMap, oldName: oldName, newName: newName});
         }
 
         export
@@ -909,8 +906,8 @@ namespace galata {
 
         export
         async function isFileListedInBrowser(fileName: string): Promise<boolean> {
-            const items = await context.page.$x(xpBuildFileSelector(fileName));
-            return items.length === 1;
+            const item = await context.page.$(`xpath=${xpBuildFileSelector(fileName)}`);
+            return item !== null;
         }
 
         export
@@ -980,14 +977,14 @@ namespace galata {
         export
         async function refresh(): Promise<void> {
             const page = context.page;
-            const items = await page.$x(`//div[@id='filebrowser']//button[${xpContainsClass('jp-ToolbarButtonComponent')} and .//*[@data-icon='ui-components:refresh']]`);
+            const item = await page.$(`xpath=//div[@id='filebrowser']//button[${xpContainsClass('jp-ToolbarButtonComponent')} and .//*[@data-icon='ui-components:refresh']]`);
 
-            if (items.length === 1) {
+            if (item) {
                 // wait for network response or timeout
                 await Promise.race([
                     waitForDuration(2000),
                     contents.waitForAPIResponse(async () => {
-                        await items[0].click();
+                        await item.click();
                     })
                 ]);
                 // wait for DOM rerender
@@ -998,13 +995,13 @@ namespace galata {
         }
 
         async function _openDirectory(dirName: string): Promise<boolean> {
-            const items = await context.page.$x(xpBuildDirectorySelector(dirName));
-            if (items.length !== 1) {
+            const item = await context.page.$(`xpath=${xpBuildDirectorySelector(dirName)}`);
+            if (item === null) {
                 return false;
             }
 
             await contents.waitForAPIResponse(async () => {
-                await items[0].click({ clickCount: 2});
+                await item.click({ clickCount: 2});
             });
             // wait for DOM rerender
             await waitFor(200);
@@ -1033,11 +1030,10 @@ namespace galata {
 
         export
         async function open(name: string): Promise<boolean> {
-            const items = await context.page.$x(filebrowser.xpBuildFileSelector(name));
-            const fileItem = items.length === 1 ? items[0] : null;
+            const fileItem = await context.page.$(`xpath=${filebrowser.xpBuildFileSelector(name)}`);
             if (fileItem) {
                 fileItem.click({ clickCount: 2 });
-                await context.page.waitForXPath(xpBuildActivityTabSelector(name), { visible: true });
+                await context.page.waitForSelector(xpBuildActivityTabSelector(name), { state: 'visible' });
             }
 
             return await isOpen(name);
@@ -1212,7 +1208,7 @@ namespace galata {
                 if (okButton) {
                     await okButton.click();
                 }
-                await page.waitForSelector(dialogSelector, { hidden: true });
+                await page.waitForSelector(dialogSelector, { state: 'hidden' });
             }
 
             return true;
@@ -1297,9 +1293,9 @@ namespace galata {
                 return false;
             }
 
-            return await context.page.evaluate((cellType, source) => {
+            return await context.page.evaluate(({cellType, source}) => {
                 return window.galataip.addNotebookCell(cellType, source);
-            }, cellType, source);
+            }, {cellType, source});
         }
 
         export
@@ -1308,9 +1304,9 @@ namespace galata {
                 return false;
             }
 
-            return await context.page.evaluate((cellIndex, cellType, source) => {
+            return await context.page.evaluate(({cellIndex, cellType, source}) => {
                 return window.galataip.setNotebookCell(cellIndex, cellType, source);
-            }, cellIndex, cellType, source);
+            }, {cellIndex, cellType, source});
         }
 
         export
@@ -1388,7 +1384,7 @@ namespace galata {
             }
 
             await menu.clickMenuItem('View>Show Status Bar');
-            await context.page.waitForSelector('#jp-main-statusbar', { visible: true });
+            await context.page.waitForSelector('#jp-main-statusbar', { state: 'visible' });
         }
 
         export
@@ -1399,7 +1395,7 @@ namespace galata {
             }
 
             await menu.clickMenuItem('View>Show Status Bar');
-            await context.page.waitForSelector('#jp-main-statusbar', { hidden: true });
+            await context.page.waitForSelector('#jp-main-statusbar', { state: 'hidden' });
         }
     }
 
@@ -1419,8 +1415,8 @@ namespace galata {
 
         export
         async function moveAllTabsToLeft(): Promise<void> {
-            await context.page.evaluate(async (pluginId) => {
-                const settingRegistry: ISettingRegistry = await window.galataip.getPlugin(pluginId);
+            await context.page.evaluate(async ({pluginId}) => {
+                const settingRegistry = await window.galataip.getPlugin(pluginId) as ISettingRegistry;
                 const SIDEBAR_ID = '@jupyterlab/application-extension:sidebar';
                 const overrides =  (await settingRegistry.get(SIDEBAR_ID, 'overrides')).composite;
                 for (let widgetId of Object.keys(overrides)) {
@@ -1429,7 +1425,7 @@ namespace galata {
                 // default location of property inspector is right, move it to left during tests
                 overrides["jp-property-inspector"] = "left";
                 await settingRegistry.set(SIDEBAR_ID, 'overrides', overrides);
-            }, PLUGIN_ID_SETTINGS);
+            }, {pluginId: PLUGIN_ID_SETTINGS as keyof IPluginNameToInterfaceMap});
 
             await context.page.waitForFunction(() => {
                 const rightStack = document.getElementById('jp-right-stack');
@@ -1483,10 +1479,10 @@ namespace galata {
         }
 
         async function _waitForTabActivate(tab: ElementHandle<Element>, activate: boolean = true) {
-            await context.page.waitForFunction((tab: Element, activate: boolean) => {
+            await context.page.waitForFunction(({tab, activate}) => {
                 const current = tab.classList.contains('lm-mod-current');
                 return activate ? current : !current;
-            }, {}, tab, activate);
+            }, {tab, activate});
         }
     }
 

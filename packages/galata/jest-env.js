@@ -4,7 +4,8 @@
 const NodeEnvironment = require('jest-environment-node');
 const fs = require('fs-extra');
 const path = require('path');
-const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer-core');
+const { chromium } = require('playwright');
 const semver = require('semver');
 const { v4: uuidv4 } = require('uuid');
 const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo, waitForDuration } = require('./util');
@@ -77,7 +78,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         const context = this.global.__TEST_CONTEXT__;
         try {
             await context.page.goto(context.jlabUrl, {
-                waitUntil: ['domcontentloaded'],
+                waitUntil: 'domcontentloaded',
             });
             await this.waitForJupyterLabAppObject();
         } catch (error) {
@@ -143,10 +144,10 @@ class PuppeteerEnvironment extends NodeEnvironment {
             await Promise.resolve(options.onPageCreated(context.page));
         }
 
-        await context.page.setViewport({
+        await context.page.setViewportSize({
             width: config.pageWidth,
             height: config.pageHeight,
-            deviceScaleFactor: 1
+            // deviceScaleFactor: 1
         });
 
         await this.openJLab();
@@ -171,8 +172,8 @@ class PuppeteerEnvironment extends NodeEnvironment {
         let browser;
 
         try {
-            browser = await puppeteer.connect({
-                browserWSEndpoint: sessionInfo.wsEndpoint
+            browser = await chromium.connect({
+                wsEndpoint: sessionInfo.wsEndpoint
             });
         } catch {
             const message = `Failed to connect to browser using wsEndpoint ${sessionInfo.wsEndpoint}`;
@@ -228,7 +229,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         if (this.global.__TEST_CONTEXT__.page) {
             await this.global.__TEST_CONTEXT__.page.close();
         }
-        await this.global.__TEST_CONTEXT__.browser.disconnect();
+        // await this.global.__TEST_CONTEXT__.browser.disconnect();
 
         await super.teardown();
     }
