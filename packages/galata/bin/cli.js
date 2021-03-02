@@ -53,7 +53,7 @@ const cli = meow(`
       --result-server             launch result file server when tests finished
       --open-report               open result report
       --image-match-threshold     image matching threshold
-      --slow-mo                   slow down Puppeteer operations by the specified ms
+      --slow-mo                   slow down UI operations by the specified ms
 
     Other options:
       --launch-result-server      launch result file server for a test

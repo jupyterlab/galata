@@ -1,7 +1,6 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-// const puppeteer = require('puppeteer-core');
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs-extra');

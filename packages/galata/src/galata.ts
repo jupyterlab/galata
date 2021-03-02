@@ -1,13 +1,7 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-// import * as puppeteer from 'puppeteer-core';
-import { Page } from 'playwright';
-
-// import {
-//     ElementHandle
-// } from 'puppeteer-core';
-import { ElementHandle } from 'playwright';
+import { Page, ElementHandle } from 'playwright';
 
 import {
     IDocumentManager

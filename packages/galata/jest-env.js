@@ -4,7 +4,6 @@
 const NodeEnvironment = require('jest-environment-node');
 const fs = require('fs-extra');
 const path = require('path');
-// const puppeteer = require('puppeteer-core');
 const { chromium } = require('playwright');
 const semver = require('semver');
 const { v4: uuidv4 } = require('uuid');
@@ -46,7 +45,7 @@ async function checkJupyterLabVersion(page) {
     saveSessionInfo(sessionInfo);
 };
 
-class PuppeteerEnvironment extends NodeEnvironment {
+class TestEnvironment extends NodeEnvironment {
     constructor(config) {
         super(config);
     }
@@ -168,7 +167,6 @@ class PuppeteerEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
 
-        // connect to puppeteer
         let browser;
 
         try {
@@ -229,7 +227,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
         if (this.global.__TEST_CONTEXT__.page) {
             await this.global.__TEST_CONTEXT__.page.close();
         }
-        // await this.global.__TEST_CONTEXT__.browser.disconnect();
+        await this.global.__TEST_CONTEXT__.browser.close();
 
         await super.teardown();
     }
@@ -239,4 +237,4 @@ class PuppeteerEnvironment extends NodeEnvironment {
     }
 }
 
-module.exports = PuppeteerEnvironment;
+module.exports = TestEnvironment;
