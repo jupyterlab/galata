@@ -1,7 +1,7 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-const { chromium } = require('playwright');
+const playwright = require('playwright');
 const path = require('path');
 const fs = require('fs-extra');
 const axios = require('axios');
@@ -9,6 +9,9 @@ const semver = require('semver');
 const { getConfig, log, saveLogsToFile, saveSessionInfo, waitForDuration } = require('./util');
 
 const config = getConfig();
+const browserType = config.browserType;
+const pwBrowser = browserType === 'firefox' ? playwright.firefox :
+                    browserType === 'webkit' ? playwright.webkit : playwright.chromium;
 
 function getBuildJlabVersion() {
     const metadataFilePath = path.resolve(__dirname, './bin/metadata.json');
@@ -54,7 +57,7 @@ module.exports = async function () {
         try {
             const apiUrl = `${config.chromeUrl}/json/version`;
             const response = await axios.get(apiUrl);
-            browser = await chromium.connect({
+            browser = await pwBrowser.connect({
                 wsEndpoint: response.data.webSocketDebuggerUrl,
                 slowMo: slowMo
             });
@@ -62,25 +65,20 @@ module.exports = async function () {
             await logAndExit('error', `Failed to connect to remote Chrome at "${config.chromeUrl}"`);
         }
     } else {
-        if (fs.existsSync(config.chromePath)) {
-            try {
-                browser = await chromium.launchServer({
-                    executablePath: config.chromePath,
-                    headless: headless,
-                    // args: ['-AppleMagnifiedMode', 'YES', `--window-size=${pageWidth},${pageHeight + 25}`],
-                    ignoreDefaultArgs: ["--enable-automation"],
-                    defaultViewport: {
-                        width: pageWidth,
-                        height: pageHeight,
-                        deviceScaleFactor: 1
-                    },
-                    slowMo: slowMo
-                });
-            } catch {
-                await logAndExit('error', `Failed to launch headless browser from "${config.chromePath}"`);
-            }
-        } else {
-            await logAndExit('error', `Chrome executable not found at path "${config.chromePath}"`);
+        try {
+            browser = await pwBrowser.launchServer({
+                headless: headless,
+                // args: ['-AppleMagnifiedMode', 'YES', `--window-size=${pageWidth},${pageHeight + 25}`],
+                ignoreDefaultArgs: ["--enable-automation"],
+                defaultViewport: {
+                    width: pageWidth,
+                    height: pageHeight,
+                    deviceScaleFactor: 1
+                },
+                slowMo: slowMo
+            });
+        } catch {
+            await logAndExit('error', `Failed to launch headless browser "${config.browser}"`);
         }
     }
 
@@ -90,7 +88,7 @@ module.exports = async function () {
 
     const sessionInfo = {
         testId: config.testId,
-        chromePath: config.chromePath,
+        browserType: config.browserType,
         testOutputDir: config.testOutputDir,
         referenceDir: config.referenceDir,
         jlabBaseUrl: config.jlabBaseUrl,

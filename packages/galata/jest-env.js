@@ -4,7 +4,7 @@
 const NodeEnvironment = require('jest-environment-node');
 const fs = require('fs-extra');
 const path = require('path');
-const { chromium } = require('playwright');
+const playwright = require('playwright');
 const semver = require('semver');
 const { v4: uuidv4 } = require('uuid');
 const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo, waitForDuration } = require('./util');
@@ -12,6 +12,9 @@ const { getConfig, log, saveLogsToFile, getSessionInfo, saveSessionInfo, waitFor
 
 const sessionInfo = getSessionInfo();
 const config = getConfig();
+const browserType = config.browserType;
+const pwBrowser = browserType === 'firefox' ? playwright.firefox :
+                    browserType === 'webkit' ? playwright.webkit : playwright.chromium;
 
 async function logAndExit(type, message, code = 1) {
     log(type, message);
@@ -170,7 +173,7 @@ class TestEnvironment extends NodeEnvironment {
         let browser;
 
         try {
-            browser = await chromium.connect({
+            browser = await pwBrowser.connect({
                 wsEndpoint: sessionInfo.wsEndpoint
             });
         } catch {

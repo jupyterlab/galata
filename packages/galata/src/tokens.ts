@@ -42,7 +42,7 @@ type CreateNewPageFunction = (options?: ICreateNewPageOptions) => Promise<Page>;
 export
 interface IGalataContext {
     testId: string;
-    chromePath: string;
+    browserType: string;
     jlabBaseUrl: string;
     jlabToken: string;
     jlabWorkspace: string;

@@ -6,7 +6,7 @@ const chalk = require('chalk');
 const path = require('path');
 
 const configKeys = {
-    "string": new Set(["chromePath", "chromeUrl", "jlabBaseUrl", "jlabToken", "testId", "testOutputDir", "referenceDir"]),
+    "string": new Set(["browserType", "chromeUrl", "jlabBaseUrl", "jlabToken", "testId", "testOutputDir", "referenceDir"]),
     "boolean": new Set(["headless", "skipVisualRegression", "skipHtmlRegression", "discardMatchedCaptures"]),
     "int": new Set(["pageWidth", "pageHeight", "slowMo"]),
     "float": new Set(["imageMatchThreshold"]),

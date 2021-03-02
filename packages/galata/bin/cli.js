@@ -32,8 +32,8 @@ const cli = meow(`
       $ galata <test_files> <options>
 
     Options
+      --browser-type              Browser type to use [chromium (default), firefox, webkit]
       --chrome-url                Chrome Browser remote debugging URL
-      --chrome-path               Chrome Browser executable path
       --test-path-pattern         regexp pattern to match test files
       --jlab-base-url             JupyterLab base URL
       --jlab-token                JupyterLab authentication token
@@ -139,18 +139,9 @@ const cli = meow(`
             type: 'number',
             default: 0.1
         },
-        chromePath: {
+        browserType: {
             type: 'string',
-            default: config.chromePath || ((() => {
-                const platform = os.platform();
-                if (platform === 'win32') {
-                    return 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe';
-                } else if (platform === 'linux') {
-                    return '/usr/bin/chromium';
-                } else {
-                    return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-                }
-            })())
+            default: 'chromium'
         },
         chromeUrl: {
             type: 'string',
