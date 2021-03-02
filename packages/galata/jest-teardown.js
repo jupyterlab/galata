@@ -9,7 +9,7 @@ module.exports = async function () {
     // close the browser instance
     // await global.__BROWSER_GLOBAL__.disconnect();
 
-    if (config.chromeUrl === '') {
+    if (config.browserUrl === '') {
         await global.__BROWSER_GLOBAL__.close();
     }
 

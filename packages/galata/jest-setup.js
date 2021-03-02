@@ -53,22 +53,21 @@ module.exports = async function () {
     const slowMo = config.slowMo;
     let browser;
 
-    if (config.chromeUrl !== '') {
+    if (config.browserUrl !== '') {
         try {
-            const apiUrl = `${config.chromeUrl}/json/version`;
+            const apiUrl = `${config.browserUrl}/json/version`;
             const response = await axios.get(apiUrl);
             browser = await pwBrowser.connect({
                 wsEndpoint: response.data.webSocketDebuggerUrl,
                 slowMo: slowMo
             });
         } catch {
-            await logAndExit('error', `Failed to connect to remote Chrome at "${config.chromeUrl}"`);
+            await logAndExit('error', `Failed to connect to remote browser at "${config.browserUrl}"`);
         }
     } else {
         try {
             browser = await pwBrowser.launchServer({
                 headless: headless,
-                // args: ['-AppleMagnifiedMode', 'YES', `--window-size=${pageWidth},${pageHeight + 25}`],
                 ignoreDefaultArgs: ["--enable-automation"],
                 defaultViewport: {
                     width: pageWidth,

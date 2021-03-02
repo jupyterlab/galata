@@ -33,7 +33,7 @@ const cli = meow(`
 
     Options
       --browser-type              Browser type to use [chromium (default), firefox, webkit]
-      --chrome-url                Chrome Browser remote debugging URL
+      --browser-url               Browser remote debugging URL
       --test-path-pattern         regexp pattern to match test files
       --jlab-base-url             JupyterLab base URL
       --jlab-token                JupyterLab authentication token
@@ -64,7 +64,7 @@ const cli = meow(`
 
     Examples
       $ galata --jlab-base-url http://localhost:8888
-      $ galata --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+      $ galata --browser-url http://localhost:9222 --jlab-base-url http://localhost:8888
       $ galata ./ui-tests/*.test.ts
       $ galata --exclude contents
       $ galata --include [notebook,contents]
@@ -143,9 +143,9 @@ const cli = meow(`
             type: 'string',
             default: 'chromium'
         },
-        chromeUrl: {
+        browserUrl: {
             type: 'string',
-            default: config.chromeUrl || ''
+            default: config.browserUrl || ''
         },
         deleteReferences: {
             type: 'boolean',
