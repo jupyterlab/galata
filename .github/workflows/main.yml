@@ -32,6 +32,5 @@ jobs:
         lerna run build
     - name: Test
       run: |
-        cd packages/galata
-        which chromium
-        npm run test -- --chrome-path /usr/bin/chromium
+        npm run test:ci
+

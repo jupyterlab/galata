@@ -1,6 +1,10 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "start": "jupyter lab --config ./jupyter_server_config.py --no-browser",
+    "test:ci": "(jlpm run start&) && lerna run test --scope @jupyterlab/galata"
+  },
   "devDependencies": {
     "lerna": "^3.20.2"
   }
