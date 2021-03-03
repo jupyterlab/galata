@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "jupyter lab --config ./jupyter_server_config.py",
-    "test:ci": "(jlpm run start&) && lerna run test --scope @jupyterlab/galata"
+    "test:ci": "(jlpm run start&) && lerna run test --stream --scope @jupyterlab/galata"
   },
   "devDependencies": {
     "lerna": "^3.20.2"
