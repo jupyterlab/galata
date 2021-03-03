@@ -15,7 +15,7 @@ Galata is a JupyterLab UI Testing Framework that provides:
 ![screencast](media/screencast.gif)
 
 ## Architectural Overview
-Galata loads `JupyterLab` in `Headless Chrome` browser and interacts with it using `puppeteer` library. Since puppeteer can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `galata` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
+Galata loads `JupyterLab` in headless browser and interacts with it using `playwright` library. Since playwright can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API that makes interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
 ## Compatibility
 Galata is compatible with `JupyterLab 3`. It communicates with the JupyterLab using the *jupyterlab: JupyterFrontEnd* object exposed to browser window (`window.jupyterlab`). The *jupyterlab: JupyterFrontEnd* object is accessible when JupyterLab is launched with `--expose-app-in-browser` flag.
@@ -40,8 +40,8 @@ For tests to be run, a JupyterLab instance must be up and running. Launch it wit
 jupyter lab --expose-app-in-browser --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.disable_check_xsrf='True'
 ```
 
-Galata uses `Headless Chrome` browser to launch JupyterLab and runs tests in. Chrome can be launched by Galata automatically. On Mac and Windows, Chrome is launched from default install locations. Chrome executable path can be specified using `--chrome-path` command line parameter as well.
-Galata can also connect to Chrome via a remote debugging URL. It can be specified using `--chrome-url`.
+Galata uses headless browser to launch JupyterLab and runs tests in. Browser can be launched by Galata automatically.
+Galata can also connect to Browser via a remote debugging URL. It can be specified using `--browser-url`.
 
 ## Running tests
 There are two projects in this mono-repo. `galata` core project and `galata-example` project which is a boilerplate project that shows how `galata` can be integrated into a node project. Both of these projects contain some test suites that serve as unit tests and examples. You can run them using `lerna run test` or `npm run test` in each project's root directory. It is suggested to run tests in each projects directory as below. Otherwise you need to run `lerna run test --stream` to see detailed result of each test in a test suite.
@@ -72,17 +72,23 @@ Notes:
 
 #### **Options**
 
-- **--chrome-url**: Chrome Browser remote debugging URL
+- **--browser-type**: Browser type to use for running tests
 
-    If specified, Galata connects to Chrome using this URL, instead of launching a new Chrome instance.
+    Galata can run tests in three different type of browsers: `chromium`, `firefox` and `webkit`.
 
+    *Default*: 'chromium'
+
+- **--browser-path**: Browser executable path
+
+    Browser executable path to use when launching a browser, instead of using browser installed by playwright. Browser type must match the type of browser being launched from this path.
+    	
     *Default*: ''
 
-- **--chrome-path**: Chrome Browser executable path
+- **--browser-url**: Browser remote debugging URL
 
-    Chrome executable path to use when launching Chrome browser. Used if `--chrome-url` is not specified.
-    
-    *Default*: On Mac and Windows, it defaults to Chrome executable path at default install location.
+    If specified, Galata connects to Browser using this URL, instead of launching a new Browser instance. Browser type must match the type of browser being connected with this URL.
+
+    *Default*: ''
 
 - **--test-path-pattern**: Regular expression pattern to match test files to run.
 
@@ -192,9 +198,9 @@ Notes:
 
     *Default*: `0.1`
 
-- **--slow-mo**: Slow down Puppeteer operations by the specified ms
+- **--slow-mo**: Slow down UI operations by the specified ms
 
-    If specified, puppeteer operations are slowed down by the specified milliseconds. Can be used for debugging tests.
+    If specified, playwright operations are slowed down by the specified milliseconds. Can be used for debugging tests.
 
     *Default*: `0`
 
@@ -228,7 +234,7 @@ Notes:
 Examples
 
     $ galata --jlab-base-url http://localhost:8888
-    $ galata --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+    $ galata --browser-url http://localhost:9222 --jlab-base-url http://localhost:8888
     $ galata ./ui-tests/*.test.ts
     $ galata --exclude contents
     $ galata --include notebook,contents

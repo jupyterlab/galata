@@ -1,7 +1,7 @@
 // Copyright (c) Bloomberg Finance LP.
 // Distributed under the terms of the Modified BSD License.
 
-import * as puppeteer from 'puppeteer-core';
+import { Page, Browser } from 'playwright';
 
 export
 type CaptureType = 'image' | 'html';
@@ -32,17 +32,17 @@ type TestLogs = { [key: string]: { [key: string]: ITestLog[] } };
 export
 interface ICreateNewPageOptions {
     generateWorkspace?: boolean;
-    onPageCreated?: (page: puppeteer.Page) => Promise<void> | void;
-    onPageLoaded?: (page: puppeteer.Page) => Promise<void> | void;
+    onPageCreated?: (page: Page) => Promise<void> | void;
+    onPageLoaded?: (page: Page) => Promise<void> | void;
 };
 
 export
-type CreateNewPageFunction = (options?: ICreateNewPageOptions) => Promise<puppeteer.Page>;
+type CreateNewPageFunction = (options?: ICreateNewPageOptions) => Promise<Page>;
 
 export
 interface IGalataContext {
     testId: string;
-    chromePath: string;
+    browserType: string;
     jlabBaseUrl: string;
     jlabToken: string;
     jlabWorkspace: string;
@@ -53,8 +53,8 @@ interface IGalataContext {
     testOutputDir: string;
     referenceDir: string;
     capturePrefix: string;
-    browser: puppeteer.Browser;
-    page: puppeteer.Page;
+    browser: Browser;
+    page: Page;
     exposedFunctions: string[];
     suite: number;
     suiteName: string;

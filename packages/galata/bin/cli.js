@@ -32,8 +32,9 @@ const cli = meow(`
       $ galata <test_files> <options>
 
     Options
-      --chrome-url                Chrome Browser remote debugging URL
-      --chrome-path               Chrome Browser executable path
+      --browser-type              Browser type to use [chromium (default), firefox, webkit]
+      --browser-path              Browser executable path
+      --browser-url               Browser remote debugging URL
       --test-path-pattern         regexp pattern to match test files
       --jlab-base-url             JupyterLab base URL
       --jlab-token                JupyterLab authentication token
@@ -53,7 +54,7 @@ const cli = meow(`
       --result-server             launch result file server when tests finished
       --open-report               open result report
       --image-match-threshold     image matching threshold
-      --slow-mo                   slow down Puppeteer operations by the specified ms
+      --slow-mo                   slow down UI operations by the specified ms
 
     Other options:
       --launch-result-server      launch result file server for a test
@@ -64,7 +65,7 @@ const cli = meow(`
 
     Examples
       $ galata --jlab-base-url http://localhost:8888
-      $ galata --chrome-url http://localhost:9222 --jlab-base-url http://localhost:8888
+      $ galata --browser-url http://localhost:9222 --jlab-base-url http://localhost:8888
       $ galata ./ui-tests/*.test.ts
       $ galata --exclude contents
       $ galata --include [notebook,contents]
@@ -139,22 +140,17 @@ const cli = meow(`
             type: 'number',
             default: 0.1
         },
-        chromePath: {
+        browserType: {
             type: 'string',
-            default: config.chromePath || ((() => {
-                const platform = os.platform();
-                if (platform === 'win32') {
-                    return 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe';
-                } else if (platform === 'linux') {
-                    return '/usr/bin/chromium';
-                } else {
-                    return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-                }
-            })())
+            default: 'chromium'
         },
-        chromeUrl: {
+        browserPath: {
             type: 'string',
-            default: config.chromeUrl || ''
+            default: config.browserPath || ''
+        },
+        browserUrl: {
+            type: 'string',
+            default: config.browserUrl || ''
         },
         deleteReferences: {
             type: 'boolean',
