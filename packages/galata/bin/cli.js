@@ -33,6 +33,7 @@ const cli = meow(`
 
     Options
       --browser-type              Browser type to use [chromium (default), firefox, webkit]
+      --browser-path              Browser executable path
       --browser-url               Browser remote debugging URL
       --test-path-pattern         regexp pattern to match test files
       --jlab-base-url             JupyterLab base URL
@@ -142,6 +143,10 @@ const cli = meow(`
         browserType: {
             type: 'string',
             default: 'chromium'
+        },
+        browserPath: {
+            type: 'string',
+            default: config.browserPath || ''
         },
         browserUrl: {
             type: 'string',

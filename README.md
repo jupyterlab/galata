@@ -78,6 +78,11 @@ Notes:
 
     *Default*: 'chromium'
 
+- **--browser-path**: Browser executable path
+
+    Browser executable path to use when launching a browser, instead of using browser installed by playwright. Browser type must match the type of browser being launched from this path.
+    	
+    *Default*: ''
 
 - **--browser-url**: Browser remote debugging URL
 

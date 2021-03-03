@@ -66,8 +66,17 @@ module.exports = async function () {
         }
     } else {
         try {
+            let executablePath = undefined;
+            if (config.browserPath !== '') {
+                if (fs.existsSync(config.browserPath)) {
+                    executablePath = config.browserPath;
+                } else {
+                    log('warning', `Browser executable not found at path ${config.browserPath}`);
+                }
+            }
             browser = await pwBrowser.launchServer({
                 headless: headless,
+                executablePath: executablePath,
                 ignoreDefaultArgs: ["--enable-automation"],
                 defaultViewport: {
                     width: pageWidth,
@@ -77,7 +86,7 @@ module.exports = async function () {
                 slowMo: slowMo
             });
         } catch {
-            await logAndExit('error', `Failed to launch headless browser "${config.browser}"`);
+            await logAndExit('error', `Failed to launch headless browser "${config.browserType}" with path "${config.browserPath}"`);
         }
     }
 
