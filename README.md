@@ -15,7 +15,7 @@ Galata is a JupyterLab UI Testing Framework that provides:
 ![screencast](media/screencast.gif)
 
 ## Architectural Overview
-Galata loads `JupyterLab` in headless browser and interacts with it using `playwright` library. Since playwright can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API named `galata` making interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
+Galata loads `JupyterLab` in headless browser and interacts with it using `playwright` library. Since playwright can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API that makes interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
 ## Compatibility
 Galata is compatible with `JupyterLab 3`. It communicates with the JupyterLab using the *jupyterlab: JupyterFrontEnd* object exposed to browser window (`window.jupyterlab`). The *jupyterlab: JupyterFrontEnd* object is accessible when JupyterLab is launched with `--expose-app-in-browser` flag.
