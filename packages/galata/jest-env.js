@@ -148,8 +148,7 @@ class TestEnvironment extends NodeEnvironment {
 
         await context.page.setViewportSize({
             width: config.pageWidth,
-            height: config.pageHeight,
-            // deviceScaleFactor: 1
+            height: config.pageHeight
         });
 
         await this.openJLab();
