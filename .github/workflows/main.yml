@@ -34,12 +34,10 @@ jobs:
       run: |
         npm run start:detached
     - name: Wait for JupyterLab
-      uses: nev7n/wait_for_response@v1
+      uses: ifaxity/wait-on-action@v1
       with:
-        url: 'http://localhost:8888/api'
-        responseCode: 200
-        timeout: 30000
-        interval: 500
+        resource: http-get://localhost:8888/api
+        timeout: 20000
     - name: Test
       run: |
         npm run test:ci
