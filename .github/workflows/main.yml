@@ -32,7 +32,7 @@ jobs:
         lerna run build
     - name: Launch JupyterLab
       run: |
-        npm run start
+        npm run start:detached
     - name: Wait for JupyterLab
       run: |
         uses: nev7n/wait_for_response@v1
