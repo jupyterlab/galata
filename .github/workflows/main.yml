@@ -38,7 +38,7 @@ jobs:
       with:
         url: 'http://localhost:8888/'
         responseCode: 200
-        timeout: 2000
+        timeout: 20000
         interval: 500
     - name: Test
       run: |
