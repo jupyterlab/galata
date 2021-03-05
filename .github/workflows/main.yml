@@ -30,7 +30,14 @@ jobs:
         npm install --global lerna
         lerna bootstrap --hoist
         lerna run build
+    - name: Launch JupyterLab
+      run: |
+        npm run start:detached
+    - name: Wait for JupyterLab
+      uses: ifaxity/wait-on-action@v1
+      with:
+        resource: http-get://localhost:8888/api
+        timeout: 20000
     - name: Test
       run: |
         npm run test:ci
-
