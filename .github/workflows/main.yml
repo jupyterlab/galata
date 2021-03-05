@@ -33,13 +33,10 @@ jobs:
     - name: Launch JupyterLab
       run: |
         npm run start:detached
-    - name: Wait for JupyterLab
-      uses: nev7n/wait_for_response@v1
+    - name: Sleep for 10 seconds
+      uses: jakejarvis/wait-action@master
       with:
-        url: 'http://localhost:8888/'
-        responseCode: 200
-        timeout: 20000
-        interval: 500
+        time: '20s'
     - name: Test
       run: |
         npm run test:ci
