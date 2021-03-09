@@ -81,7 +81,7 @@ Notes:
 - **--browser-path**: Browser executable path
 
     Browser executable path to use when launching a browser, instead of using browser installed by playwright. Browser type must match the type of browser being launched from this path.
-    	
+
     *Default*: ''
 
 - **--browser-url**: Browser remote debugging URL
@@ -251,7 +251,9 @@ This repository is a Jupyter project and follows the Jupyter
 [Community Guides and Code of Conduct](https://jupyter.readthedocs.io/en/latest/community/content-community.html).
 
 ## About Galata Name
+
 Galata framework is named after [Galata Tower](https://en.wikipedia.org/wiki/Galata_Tower) in Istanbul. Centuries ago, Galata Tower was used to spot fires in the city. Tower was also used as astronomical observatory in the past.
 
 ## Acknowledgement
-Development of this project began under [Bloomberg](https://github.com/bloomberg) organization, then it was transferred to [JupyterLab](https://github.com/jupyterlab) organization. We gratefully acknowledge **Bloomberg** for the generous contribution and supporting open-source software community.
+
+Development of this project began under [Bloomberg](https://github.com/bloomberg) organization by [Mehmet Bektas](https://github.com/mbektasbbg), then it was transferred to [JupyterLab](https://github.com/jupyterlab) organization. We gratefully acknowledge **Bloomberg** for the generous contribution and supporting open-source software community.

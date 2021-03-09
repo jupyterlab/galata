@@ -6,7 +6,7 @@
   "scripts": {
     "test": "galata"
   },
-  "author": "Mehmet Bektas <mbektas@bloomberg.net>",
+  "author": "Project Jupyter",
   "license": "BSD-3-Clause",
   "dependencies": {
     "@jupyterlab/galata": "3.0.3-1"

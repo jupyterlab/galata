@@ -26,7 +26,7 @@
   ],
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
-  "author": "Mehmet Bektas <mbektas@bloomberg.net>",
+  "author": "Project Jupyter",
   "license": "BSD-3-Clause",
   "bin": {
     "galata": "bin/cli.js",
