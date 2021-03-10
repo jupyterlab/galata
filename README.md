@@ -50,6 +50,8 @@ Galata should generate console output similar to following
 
 You can edit the test suite file [`galata-example/tests/test.test.ts`](packages/galata-example/tests/test.test.ts) or add more test suites to the [`galata-example/tests`](packages/galata-example/tests/) directory. You can pass additional [command-line options](#command-line-options) to Galata by appending them to the `npm run test` command such as `npm run test -- --no-headless`.
 
+Additional test suite examples are available in [`galata/tests`](packages/galata/tests/). They contain examples of creating notebooks, uploading notebooks to JupyterLab, running notebooks and taking screenshots.
+
 ## Architectural Overview
 Galata loads `JupyterLab` in headless browser and interacts with it using `playwright` library. Since playwright can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API that makes interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
