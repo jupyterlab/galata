@@ -14,6 +14,42 @@ Galata is a JupyterLab UI Testing Framework that provides:
 
 ![screencast](media/screencast.gif)
 
+## Getting Started
+
+Galata repo contains an example test project that you can use to start writing UI test suites.
+
+### Launch JupyterLab
+```bash
+jupyter lab --expose-app-in-browser --no-browser --ServerApp.token='' --ServerApp.password='' --ServerApp.disable_check_xsrf='True'
+```
+
+### Build and run test project
+
+```bash
+# clone Galata repo
+git clone https://github.com/jupyterlab/galata.git
+
+# cd into galata-example project
+cd galata/packages/galata-example
+
+# install dependencies
+npm install
+
+# run test suites using `test` script which calls `galata` CLI script
+npm run test
+```
+
+Galata should generate console output similar to below
+
+```bash
+ PASS  tests/test.test.ts (6.485s)
+  A Test Suite
+    ✓ A test (3ms)
+
+```
+
+You can edit test suite file [`galata-example/tests/test.test.ts`](packages/galata-example/tests/test.test.ts) or add more test suites into [`galata-example/tests`](packages/galata-example/tests/) directory. You can pass additional [command-line options](command-line-options) to Galata by appending them to `npm run test` command such as `npm run test -- --no-headless`.
+
 ## Architectural Overview
 Galata loads `JupyterLab` in headless browser and interacts with it using `playwright` library. Since playwright can be quite low level for a lot of users and JupyterLab code-base knowledge is required to interact with JupyterLab UI, Galata provides a high level API that makes interacting with JupyterLab UI much easier. Galata is designed to be used with `jest`. It customizes jest environment configuration to manage JupyterLab runtime automatically so that users can focus on only writing their test cases.
 
