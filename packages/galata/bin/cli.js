@@ -445,13 +445,13 @@ function runUpdateReferenceFiles() {
     const referenceDir = cli.flags.referenceDir;
 
     if (!fs.existsSync(outputDir)) {
-        console.log(`Output directory '${outputDir}' does not exist.`);
-        process.exit(1);
+        console.log(`Output directory ${outputDir} not found, creating it`);
+        fs.mkdirSync(outputDir, { recursive: true });
     }
 
     if (!fs.existsSync(referenceDir)) {
-        console.log(`Reference directory '${referenceDir}' does not exist.`);
-        process.exit(1);
+        console.log(`Reference directory ${referenceDir} not found, creating it`);
+        fs.mkdirSync(referenceDir, { recursive: true });
     }
 
     let testId = cli.flags.updateReferences;
@@ -467,8 +467,7 @@ function runUpdateReferenceFiles() {
     const testOutputDir = path.join(outputDir, testId);
 
     if (!fs.existsSync(testOutputDir)) {
-        console.log(`Test output directory '${testOutputDir}' does not exist.`);
-        process.exit(1);
+        fs.mkdirSync(testOutputDir, { recursive: true });
     }
 
     console.log(`Copying test output files from ${testOutputDir} into reference directory ${referenceDir}`);
