@@ -226,7 +226,7 @@ Notes:
 
 - **--open-report**: Open result report
 
-    If set to true, opens the test result report URL at `http://localhost:8080/report/report.html` using system's default browser. Only has effect when `--result-server` is toggled. Can be negated using `--no-open-report`.
+    If set to true, opens the test result report URL at `http://localhost:8080/report/index.html` using system's default browser. Only has effect when `--result-server` is toggled. Can be negated using `--no-open-report`.
 
     *Default*: `true`
 
