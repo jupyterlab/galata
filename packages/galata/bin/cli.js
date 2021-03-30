@@ -355,7 +355,7 @@ function generateHTMLReport(testId) {
     const template = fs.readFileSync(path.resolve(__dirname, '../report.ejs'), 'utf-8');
     const html = ejs.render(template, { data: data });
 
-    fs.writeFileSync(path.join(testOutputDir, 'report/report.html'), html);
+    fs.writeFileSync(path.join(testOutputDir, 'report/index.html'), html);
 }
 
 function launchResultServer(testId) {
@@ -384,7 +384,7 @@ function launchResultServer(testId) {
     });
 
     if (cli.flags.openReport) {
-        open(`http://127.0.0.1:${port}/report/report.html`);
+        open(`http://127.0.0.1:${port}/report/index.html`);
     }
 }
 
