@@ -574,13 +574,7 @@ namespace galata {
             await context.page.evaluate(async (launcherSelector) => {
                 const app = window.jupyterlab;
 
-                const it = app.shell.widgets('main');
-                let widget = it.next();
-                while (widget) {
-                    widget.close();
-                    widget = it.next();
-                }
-
+                await app.commands.execute('application:close-all');
                 await window.galataip.waitForXPath(launcherSelector);
             }, launcherSelector);
         }
