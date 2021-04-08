@@ -9,7 +9,8 @@ module.exports = {
     target: 'web',
     output: {
         path: path.resolve(__dirname, 'lib-inpage'),
-        filename: 'inpage.js'
+        filename: 'inpage.js',
+        publicPath: '/'
     },
     resolve: {
         extensions: ['.ts', '.js'],
