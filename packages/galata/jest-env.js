@@ -119,6 +119,17 @@ class TestEnvironment extends NodeEnvironment {
         if (!sessionInfo.runtimeJlabVersion) {
             await checkJupyterLabVersion(context.page);
         }
+
+        if (config.theme !== '') {
+            const themeName = config.theme === 'dark' ? 'JupyterLab Dark' :
+                config.theme === 'light' ? 'JupyterLab Light' : config.theme;
+
+            log('info', `Setting theme to ${themeName}`, { save: false });
+
+            await context.page.evaluate(async (themeName) => {
+                await window.galataip.setTheme(themeName);
+            }, themeName);
+        }
     }
 
     async createNewPage(options) {

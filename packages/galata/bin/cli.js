@@ -55,6 +55,7 @@ const cli = meow(`
       --open-report               open result report
       --image-match-threshold     image matching threshold
       --slow-mo                   slow down UI operations by the specified ms
+      --theme                     JupyterLab Theme to set [light / JupyterLab Light, dark / JupyterLab Dark, installed theme name]
 
     Other options:
       --launch-result-server      launch result file server for a test
@@ -176,6 +177,10 @@ const cli = meow(`
             type: 'string',
              // inside node_modules of client
             default: config.jestPath || './node_modules/.bin/jest'
+        },
+        theme: {
+            type: 'string',
+            default: config.theme || ''
         }
     }
 });
