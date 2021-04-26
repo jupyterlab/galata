@@ -62,6 +62,52 @@ export class GalataInpage implements IGalataInpage {
             setTimeout(() => { resolve(); }, duration);
         });
     }
+
+    async waitForFunction(fn: Function, timeout?: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let checkTimer;
+            let timeoutTimer;
+            const check = async () => {
+                checkTimer = null;
+                if (await Promise.resolve(fn())) {
+                    if (timeoutTimer) {
+                        clearTimeout(timeoutTimer);
+                    }
+                    resolve();
+                } else {
+                    checkTimer = setTimeout(check, 200);
+                }
+            };
+
+            check();
+
+            if (timeout) {
+                timeoutTimer = setTimeout(() => {
+                    timeoutTimer = null;
+                    if (checkTimer) {
+                        clearTimeout(checkTimer);
+                    }
+                    reject(new Error('Timed out waiting for condition to be fulfilled.'));
+                }, timeout);
+            }
+        });
+    }
+
+    async waitForDuration(duration: number): Promise<void> {
+        return new Promise((resolve) => {
+            setTimeout(() => { resolve(); }, duration);
+        });
+    }
+
+    async waitFor(condition: Function | number, timeout?: number): Promise<void> {
+        const conditionType = typeof condition;
+
+        if (conditionType === 'function') {
+            return this.waitForFunction(condition as Function, timeout);
+        } else if (conditionType === 'number') {
+            return this.waitForDuration(condition as number);
+        }
+    }
     
     async waitForLaunch(path: string = '/lab'): Promise<void> {
         return new Promise(async (resolve, reject) => {
@@ -354,6 +400,14 @@ export class GalataInpage implements IGalataInpage {
 
     isElementVisible(el: HTMLElement): boolean {
         return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    }
+
+    async setTheme(themeName: string): Promise<void> {
+        await this._app.commands.execute('apputils:change-theme', { theme: themeName });
+
+        await this.waitFor(async () => {
+            return document.body.dataset.jpThemeName === themeName;
+        });
     }
     
     get app(): JupyterFrontEnd {

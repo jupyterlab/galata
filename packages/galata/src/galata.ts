@@ -1475,6 +1475,33 @@ namespace galata {
     }
 
     export
+    namespace theme {
+        export
+        async function setDarkTheme() {
+            await setTheme('JupyterLab Dark');
+        }
+
+        export
+        async function setLightTheme() {
+            await setTheme('JupyterLab Light');
+        }
+
+        export
+        async function getTheme(): Promise<string> {
+            return await context.page.evaluate(() => {
+                return document.body.dataset.jpThemeName;
+            });
+        }
+
+        export
+        async function setTheme(themeName: string) {
+            await context.page.evaluate(async (themeName: string) => {
+                await window.galataip.setTheme(themeName);
+            }, themeName);
+        }
+    }
+
+    export
     async function resetUI() {
         // close menus
         await menu.closeAll();

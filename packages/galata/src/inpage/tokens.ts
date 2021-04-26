@@ -54,6 +54,7 @@ interface IGalataInpage {
     isElementVisible(el: HTMLElement): boolean;
     waitForSelector(selector: string, node?: Element, options?: IWaitForSelectorOptions): Promise<Node | void>;
     waitForXPath(selector: string, node?: Element, options?: IWaitForSelectorOptions): Promise<Node | void>;
+    setTheme(themeName: string): Promise<void>;
 
     readonly app: JupyterFrontEnd;
 }
