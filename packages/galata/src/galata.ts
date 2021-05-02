@@ -94,7 +94,7 @@ namespace galata {
     const context: IGalataContext = global.__TEST_CONTEXT__;
 
     export
-    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'command-palette' | 'tab-manager';
+    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
 
     export
     function xpContainsClass(className: string): string {
