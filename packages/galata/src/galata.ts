@@ -1518,6 +1518,30 @@ namespace galata {
         // go to home folder
         await filebrowser.openHomeDirectory();
     }
+
+    export
+    async function isInSimpleMode(): Promise<boolean> {
+        const toggle = await context.page.$('#jp-single-document-mode button.jp-switch');
+        const checked = await toggle.getAttribute('aria-checked') === 'true';
+
+        return checked;
+    }
+
+    export
+    async function toggleSimpleMode(simple: boolean): Promise<boolean> {
+        const toggle = await context.page.$('#jp-single-document-mode button.jp-switch');
+        const checked = await toggle.getAttribute('aria-checked') === 'true';
+
+        if ((checked && !simple) || (!checked && simple)) {
+            toggle.click();
+        }
+
+        await waitFor(async () => {
+            return await isInSimpleMode() === simple;
+        });
+
+        return true;
+    }
 };
 
 export { describeWrapper as describe, testWrapper as test };
