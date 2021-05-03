@@ -97,7 +97,7 @@ namespace galata {
     type SidebarPosition = 'left' | 'right';
 
     export
-    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
+    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'table-of-contents' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
 
     export
     function xpContainsClass(className: string): string {
