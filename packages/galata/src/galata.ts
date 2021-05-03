@@ -552,6 +552,16 @@ namespace galata {
         }
 
         export
+        async function getOpenMenu(): Promise<ElementHandle<Element> | null> {
+            const openMenus = await context.page.$$('.lm-Widget.lm-Menu .lm-Menu-content');
+            if (openMenus.length > 0) {
+                return openMenus[openMenus.length - 1];
+            }
+
+            return null;
+        }
+
+        export
         async function clickMenuItem(path: string) {
             const parts = path.split('>');
             const numParts = parts.length;
