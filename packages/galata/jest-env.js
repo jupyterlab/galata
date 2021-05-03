@@ -33,9 +33,9 @@ async function checkJupyterLabVersion(page) {
         return window.galataip.app.version;
     });
 
-    if (semver.valid(runtimeJlabVersion)) {
-        const type = semver.major(runtimeJlabVersion) !== semver.major(buildJlabVersion) ? 'error' :
-            semver.minor(runtimeJlabVersion) !== semver.minor(buildJlabVersion) ? 'warning' : '';
+    if (semver.valid(runtimeJlabVersion, true)) {
+        const type = semver.major(runtimeJlabVersion, true) !== semver.major(buildJlabVersion, true) ? 'error' :
+            semver.minor(runtimeJlabVersion, true) !== semver.minor(buildJlabVersion, true) ? 'warning' : '';
 
         if (type === 'error' || type === 'warning') {
             log(type, `Run-time JupyterLab version (${runtimeJlabVersion}) is different than testing framework is built for (${buildJlabVersion}). This could cause issues in testing.`);
