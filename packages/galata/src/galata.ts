@@ -94,7 +94,10 @@ namespace galata {
     const context: IGalataContext = global.__TEST_CONTEXT__;
 
     export
-    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'command-palette' | 'tab-manager';
+    type SidebarPosition = 'left' | 'right';
+
+    export
+    type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'table-of-contents' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
 
     export
     function xpContainsClass(className: string): string {
@@ -546,6 +549,16 @@ namespace galata {
             }
 
             return subMenu;
+        }
+
+        export
+        async function getOpenMenu(): Promise<ElementHandle<Element> | null> {
+            const openMenus = await context.page.$$('.lm-Widget.lm-Menu .lm-Menu-content');
+            if (openMenus.length > 0) {
+                return openMenus[openMenus.length - 1];
+            }
+
+            return null;
         }
 
         export
@@ -1390,15 +1403,72 @@ namespace galata {
     export
     namespace sidebar {
         export
-        async function isOpen(): Promise<boolean> {
-            const activeTab = await context.page.$('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current');
-            return activeTab !== null;
+        async function isOpen(side: SidebarPosition = 'left'): Promise<boolean> {
+            return await getContentPanel(side) !== null;
         }
 
         export
         async function isTabOpen(id: SidebarTabId): Promise<boolean> {
-            const tabButton = await context.page.$(`.lm-TabBar.jp-SideBar .lm-TabBar-content li.lm-TabBar-tab.lm-mod-current[data-id="${id}"]`);
+            const tabButton = await context.page.$(`${buildTabSelector(id)}.lm-mod-current`);
             return tabButton !== null;
+        }
+
+        export
+        async function getTabPosition(id: SidebarTabId): Promise<SidebarPosition | null> {
+            return await context.page.evaluate(async ({tabSelector}) => {
+                const tabButton = document.querySelector(tabSelector);
+                if (!tabButton) {
+                    return null;
+                }
+
+                const sideBar = tabButton.closest('.jp-SideBar');
+                if (!sideBar) {
+                    return null;
+                }
+
+                return sideBar.classList.contains('jp-mod-right') ? 'right' : 'left';
+            }, {tabSelector: buildTabSelector(id)});
+        }
+
+        export
+        async function moveTabToLeft(id: SidebarTabId): Promise<void> {
+            await setTabPosition(id, 'left');
+        }
+
+        export
+        async function moveTabToRight(id: SidebarTabId): Promise<void> {
+            await setTabPosition(id, 'right');
+        }
+
+        export
+        async function setTabPosition(id: SidebarTabId, side: SidebarPosition): Promise<void> {
+            const position = await getTabPosition(id);
+
+            if (position === side) {
+                return;
+            }
+
+            await toggleTabPosition(id);
+
+            await waitFor(async () => {
+                return await getTabPosition(id) === side;
+            });
+        }
+
+        export
+        async function toggleTabPosition(id: SidebarTabId): Promise<void> {
+            const tab = await getTab(id);
+
+            if (!tab) {
+                return;
+            }
+
+            await tab.click({button: 'right'});
+
+            const switchMenuItem = await context.page.waitForSelector('.lm-Menu-content .lm-Menu-item[data-command="sidebar:switch"]', { state: 'visible' });
+            if (switchMenuItem) {
+                await switchMenuItem.click();
+            }
         }
 
         export
@@ -1423,7 +1493,7 @@ namespace galata {
 
         export
         async function getTab(id: SidebarTabId): Promise<ElementHandle<Element>> {
-            return await context.page.$(`.lm-TabBar-content li.lm-TabBar-tab[data-id="${id}"]`);
+            return await context.page.$(buildTabSelector(id));
         }
 
         export
@@ -1433,37 +1503,47 @@ namespace galata {
                 return;
             }
 
-            const tabButton = await context.page.$(`.lm-TabBar.jp-SideBar .lm-TabBar-content li.lm-TabBar-tab[data-id="${id}"]`);
+            const tabButton = await context.page.$(buildTabSelector(id));
             await tabButton.click();
             await _waitForTabActivate(tabButton);
         }
 
         export
-        async function open() {
-            const isOpen = await sidebar.isOpen();
+        async function getContentPanel(side: SidebarPosition = 'left'): Promise<ElementHandle<Element>> {
+            return await context.page.$(`#jp-${side}-stack .p-StackedPanel-child:not(.lm-mod-hidden)`);
+        }
+
+        export
+        async function open(side: SidebarPosition = 'left') {
+            const isOpen = await sidebar.isOpen(side);
             if (isOpen) {
                 return;
             }
 
-            await menu.clickMenuItem('View>Show Left Sidebar');
+            await menu.clickMenuItem(`View>Show ${side === 'left' ? 'Left' : 'Right'} Sidebar`);
 
-            await context.page.waitForFunction(() => {
-                return document.querySelector('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current') !== null;
+            await waitFor(async () => {
+                return await sidebar.isOpen(side);
             });
         }
 
         export
-        async function close() {
-            const isOpen = await sidebar.isOpen();
+        async function close(side: SidebarPosition = 'left') {
+            const isOpen = await sidebar.isOpen(side);
             if (!isOpen) {
                 return;
             }
 
-            await menu.clickMenuItem('View>Show Left Sidebar');
+            await menu.clickMenuItem(`View>Show ${side === 'left' ? 'Left' : 'Right'} Sidebar`);
 
-            await context.page.waitForFunction(() => {
-                return document.querySelector('.lm-TabBar.jp-SideBar .lm-TabBar-content .lm-mod-current') === null;
+            await waitFor(async () => {
+                return !await sidebar.isOpen(side);
             });
+        }
+        
+        export
+        function buildTabSelector(id: SidebarTabId): string {
+            return `.lm-TabBar.jp-SideBar .lm-TabBar-content li.lm-TabBar-tab[data-id="${id}"]`;
         }
 
         async function _waitForTabActivate(tab: ElementHandle<Element>, activate: boolean = true) {
@@ -1517,6 +1597,30 @@ namespace galata {
         await sidebar.openTab('filebrowser');
         // go to home folder
         await filebrowser.openHomeDirectory();
+    }
+
+    export
+    async function isInSimpleMode(): Promise<boolean> {
+        const toggle = await context.page.$('#jp-single-document-mode button.jp-switch');
+        const checked = await toggle.getAttribute('aria-checked') === 'true';
+
+        return checked;
+    }
+
+    export
+    async function toggleSimpleMode(simple: boolean): Promise<boolean> {
+        const toggle = await context.page.$('#jp-single-document-mode button.jp-switch');
+        const checked = await toggle.getAttribute('aria-checked') === 'true';
+
+        if ((checked && !simple) || (!checked && simple)) {
+            toggle.click();
+        }
+
+        await waitFor(async () => {
+            return await isInSimpleMode() === simple;
+        });
+
+        return true;
     }
 };
 
