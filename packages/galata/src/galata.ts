@@ -100,6 +100,13 @@ namespace galata {
     type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'table-of-contents' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
 
     export
+    type ToolbarItemId = 'save' | 'insert-cell-below' | 'cut-cells' | 'copy-cells' | 'paste-cells' | 'run-cell' | 'interrupt-kernel' | 'restart-kernel' | 'restart-kernel-and-run-all' | 'select-cell-type';
+
+    const ToolbarItemIdToIndexMap: Map<ToolbarItemId, number> = new Map([
+        ['save', 0], ['insert-cell-below', 1], ['cut-cells', 2], ['copy-cells', 3], ['paste-cells', 4], ['run-cell', 5], ['interrupt-kernel', 6], ['restart-kernel', 7], ['restart-kernel-and-run-all', 8], ['select-cell-type', 9]
+    ]);
+
+    export
     function xpContainsClass(className: string): string {
         return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
     }
@@ -1056,6 +1063,45 @@ namespace galata {
             }
 
             return null;
+        }
+
+        export
+        async function getToolbar(name?: string): Promise<ElementHandle<Element> | null> {
+            const nbPanel = await activity.getPanel(name);
+
+            if (nbPanel) {
+                return await nbPanel.$('.jp-NotebookPanel-toolbar');
+            }
+
+            return null;
+        }
+
+        export
+        async function getToolbarItem(itemId: ToolbarItemId, notebookName?: string): Promise<ElementHandle<Element> | null> {
+            const toolbar = await getToolbar(notebookName);
+
+            if (toolbar) {
+                const itemIndex = ToolbarItemIdToIndexMap.get(itemId)!;
+                const toolbarItems = await toolbar.$$('.jp-Toolbar-item');
+                if (itemIndex < toolbarItems.length) {
+                    return toolbarItems[itemIndex];
+                }
+            }
+
+            return null;
+        }
+
+        export
+        async function clickToolbarItem(itemId: ToolbarItemId, notebookName?: string): Promise<boolean> {
+            const toolbarItem = await getToolbarItem(itemId, notebookName);
+
+            if (toolbarItem) {
+                await toolbarItem.click();
+
+                return true;
+            }
+
+            return false;
         }
 
         export
