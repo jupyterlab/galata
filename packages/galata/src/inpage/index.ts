@@ -218,6 +218,18 @@ export class GalataInpage implements IGalataInpage {
         return true;
     }
 
+    isNotebookCellSelected(cellIndex: number): boolean {
+        const nbPanel = this._app.shell.currentWidget as NotebookPanel;
+        const nb = nbPanel.content;
+
+        const numCells = nb.widgets.length;
+        if (cellIndex < 0 || cellIndex >= numCells) {
+            return false;
+        }
+
+        return nb.isSelected(nb.widgets[cellIndex]);
+    }
+
     async saveActiveNotebook(): Promise<void> {
         const nbPanel = this._app.shell.currentWidget as NotebookPanel;
         await nbPanel.context.save();

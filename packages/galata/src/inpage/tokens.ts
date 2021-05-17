@@ -47,6 +47,7 @@ interface IGalataInpage {
     deleteNotebookCells(): Promise<void>;
     addNotebookCell(cellType: nbformat.CellType, source: string): Promise<boolean>;
     setNotebookCell(cellIndex: number, cellType: nbformat.CellType, source: string): Promise<boolean>;
+    isNotebookCellSelected(cellIndex: number): boolean;
     saveActiveNotebook(): Promise<void>;
     runActiveNotebook(): Promise<void>;
     waitForNotebookRun(): Promise<void>;
