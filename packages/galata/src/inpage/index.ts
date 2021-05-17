@@ -24,6 +24,10 @@ import {
 
 import * as nbformat from '@jupyterlab/nbformat';
 
+import {
+    toArray
+} from '@lumino/algorithm';
+
 function xpContainsClass(className: string): string {
     return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
 }
@@ -408,6 +412,13 @@ export class GalataInpage implements IGalataInpage {
                 await callback.onAfterScroll();
             }
         }
+    }
+
+    getNotebookToolbarItemIndex(itemName: string): number {
+        const nbPanel = this._app.shell.currentWidget as NotebookPanel;
+        const names = toArray(nbPanel.toolbar.names());
+
+        return names.indexOf(itemName);
     }
 
     isElementVisible(el: HTMLElement): boolean {
