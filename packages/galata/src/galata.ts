@@ -1825,9 +1825,12 @@ namespace galata {
 
         export
         async function setTheme(themeName: string) {
-            await context.page.evaluate(async (themeName: string) => {
+            const page = context.page;
+            await page.evaluate(async (themeName: string) => {
                 await window.galataip.setTheme(themeName);
             }, themeName);
+
+            await page.waitForSelector('#jupyterlab-splash', { state: 'detached' });
         }
     }
 
