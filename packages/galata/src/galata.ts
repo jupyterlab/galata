@@ -100,6 +100,9 @@ namespace galata {
     type SidebarTabId = 'filebrowser' | 'jp-running-sessions' | 'tab-manager' | 'jp-property-inspector' | 'table-of-contents' | 'extensionmanager.main-view' | 'jp-debugger-sidebar';
 
     export
+    type NotebookToolbarItemId = 'save' | 'insert' | 'cut' | 'copy' | 'paste' | 'run' | 'interrupt' | 'restart' | 'restart-and-run' | 'cellType' | 'kernelName' | 'kernelStatus';
+
+    export
     function xpContainsClass(className: string): string {
         return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
     }
@@ -1059,6 +1062,64 @@ namespace galata {
         }
 
         export
+        async function getToolbar(name?: string): Promise<ElementHandle<Element> | null> {
+            const nbPanel = await activity.getPanel(name);
+
+            if (nbPanel) {
+                return await nbPanel.$('.jp-NotebookPanel-toolbar');
+            }
+
+            return null;
+        }
+
+        export
+        async function getToolbarItemByIndex(itemIndex: number, notebookName?: string): Promise<ElementHandle<Element> | null> {
+            if (itemIndex === -1) {
+                return null;
+            }
+
+            const toolbar = await getToolbar(notebookName);
+
+            if (toolbar) {
+                const toolbarItems = await toolbar.$$('.jp-Toolbar-item');
+                if (itemIndex < toolbarItems.length) {
+                    return toolbarItems[itemIndex];
+                }
+            }
+
+            return null;
+        }
+
+        export
+        async function getToolbarItem(itemId: NotebookToolbarItemId, notebookName?: string): Promise<ElementHandle<Element> | null> {
+            const toolbar = await getToolbar(notebookName);
+
+            if (toolbar) {
+                const itemIndex = await context.page.evaluate(async (itemId: string) => {
+                    return window.galataip.getNotebookToolbarItemIndex(itemId);
+                }, itemId);
+
+
+                return getToolbarItemByIndex(itemIndex);
+            }
+
+            return null;
+        }
+
+        export
+        async function clickToolbarItem(itemId: NotebookToolbarItemId, notebookName?: string): Promise<boolean> {
+            const toolbarItem = await getToolbarItem(itemId, notebookName);
+
+            if (toolbarItem) {
+                await toolbarItem.click();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        export
         async function activate(name: string): Promise<boolean> {
             if (await activity.activateTab(name)) {
                 await context.page.evaluate(async () => {
@@ -1228,7 +1289,7 @@ namespace galata {
         }
 
         export
-        async function getCellOutput(cellIndex: number): Promise<ElementHandle<Element> | null> {
+        async function getCell(cellIndex: number): Promise<ElementHandle<Element> | null> {
             const notebook = await getNotebookInPanel();
             if (!notebook) {
                 return null;
@@ -1240,7 +1301,111 @@ namespace galata {
                 return null;
             }
 
-            const cell = cells[cellIndex];
+            return cells[cellIndex];
+        }
+
+        export
+        async function getCellInput(cellIndex: number): Promise<ElementHandle<Element> | null> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
+
+            const cellEditor = await cell.$('.jp-InputArea-editor');
+            if (!cellEditor) {
+                return null;
+            }
+
+            const isRenderedMarkdown = await cellEditor.evaluate((editor) => editor.classList.contains('lm-mod-hidden'));
+            if (isRenderedMarkdown) {
+                return await cell.$('.jp-MarkdownOutput');
+            }
+
+            return cellEditor;
+        }
+
+        export
+        async function getCellInputExpander(cellIndex: number): Promise<ElementHandle<Element> | null> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
+
+            return await cell.$('.jp-InputCollapser');
+        }
+
+        export
+        async function isCellInputExpanded(cellIndex: number): Promise<boolean> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
+
+            return (await cell.$('.jp-InputPlaceholder')) === null;
+        }
+
+        export
+        async function expandCellInput(cellIndex: number, expand: boolean): Promise<boolean> {
+            const expanded = await isCellInputExpanded(cellIndex);
+            if ((expanded && expand) || (!expanded && !expand)) {
+                return false;
+            }
+
+            const inputExpander = await getCellInputExpander(cellIndex);
+            if (!inputExpander) {
+                return false;
+            }
+
+            await inputExpander.click();
+
+            return true;
+        }
+
+        export
+        async function getCellOutputExpander(cellIndex: number): Promise<ElementHandle<Element> | null> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
+
+            const cellType = await getCellType(cellIndex);
+
+            return cellType === 'code' ? await cell.$('.jp-OutputCollapser') : null;
+        }
+
+        export
+        async function isCellOutputExpanded(cellIndex: number): Promise<boolean> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
+
+            return (await cell.$('.jp-OutputPlaceholder')) === null;
+        }
+
+        export
+        async function expandCellOutput(cellIndex: number, expand: boolean): Promise<boolean> {
+            const expanded = await isCellOutputExpanded(cellIndex);
+            if ((expanded && expand) || (!expanded && !expand)) {
+                return false;
+            }
+
+            const outputExpander = await getCellOutputExpander(cellIndex);
+            if (!outputExpander) {
+                return false;
+            }
+
+            await outputExpander.click();
+
+            return true;
+        }
+
+        export
+        async function getCellOutput(cellIndex: number): Promise<ElementHandle<Element> | null> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return null;
+            }
 
             const codeCellOutput = await cell.$('.jp-Cell-outputArea');
             if (codeCellOutput) {
@@ -1273,6 +1438,91 @@ namespace galata {
             }
 
             return null;
+        }
+
+        export
+        async function isCellInEditingMode(cellIndex: number): Promise<boolean> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return false;
+            }
+
+            const cellEditor = await cell.$('.jp-InputArea-editor');
+            if (cellEditor) {
+                return await cellEditor.evaluate((editor) => editor.classList.contains('jp-mod-focused'));
+            }
+
+            return false;
+        }
+
+        export
+        async function enterCellEditingMode(cellIndex: number): Promise<boolean> {
+            const cell = await getCell(cellIndex);
+            if (!cell) {
+                return false;
+            }
+
+            const cellEditor = await cell.$('.jp-Cell-inputArea');
+            if (cellEditor) {
+                let isMarkdown = false;
+                const cellType = await getCellType(cellIndex);
+                if (cellType === 'markdown') {
+                    const renderedMarkdown = await cell.$('.jp-MarkdownOutput');
+                    if (renderedMarkdown) {
+                        isMarkdown = true;
+                    }
+                }
+
+                if (isMarkdown) {
+                    await cellEditor.dblclick();
+                }
+
+                await cellEditor.click();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        export
+        async function leaveCellEditingMode(cellIndex: number): Promise<boolean> {
+            if (await isCellInEditingMode(cellIndex)) {
+                await context.page.keyboard.press('Escape');
+                return true;
+            }
+
+            return false;
+        }
+
+        export
+        async function selectCells(startIndex: number, endIndex?: number): Promise<boolean> {
+            const startCell = await getCell(startIndex);
+            if (!startCell) {
+                return false;
+            }
+
+            const clickPosition: any = { x: 15, y: 5 };
+
+            await startCell.click({position: clickPosition});
+
+            if (endIndex !== undefined) {
+                const endCell = await getCell(endIndex);
+                if (!endCell) {
+                    return false;
+                }
+
+                await endCell.click({ position: clickPosition, modifiers: ['Shift'] });
+            }
+
+            return true;
+        }
+
+        export
+        async function isCellSelected(cellIndex: number): Promise<boolean> {
+            return await context.page.evaluate((cellIndex: number) => {
+                return window.galataip.isNotebookCellSelected(cellIndex);
+            }, cellIndex);
         }
 
         export
@@ -1575,9 +1825,12 @@ namespace galata {
 
         export
         async function setTheme(themeName: string) {
-            await context.page.evaluate(async (themeName: string) => {
+            const page = context.page;
+            await page.evaluate(async (themeName: string) => {
                 await window.galataip.setTheme(themeName);
             }, themeName);
+
+            await page.waitForSelector('#jupyterlab-splash', { state: 'detached' });
         }
     }
 

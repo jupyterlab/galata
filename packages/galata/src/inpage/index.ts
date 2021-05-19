@@ -24,6 +24,10 @@ import {
 
 import * as nbformat from '@jupyterlab/nbformat';
 
+import {
+    toArray
+} from '@lumino/algorithm';
+
 function xpContainsClass(className: string): string {
     return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
 }
@@ -218,6 +222,18 @@ export class GalataInpage implements IGalataInpage {
         return true;
     }
 
+    isNotebookCellSelected(cellIndex: number): boolean {
+        const nbPanel = this._app.shell.currentWidget as NotebookPanel;
+        const nb = nbPanel.content;
+
+        const numCells = nb.widgets.length;
+        if (cellIndex < 0 || cellIndex >= numCells) {
+            return false;
+        }
+
+        return nb.isSelected(nb.widgets[cellIndex]);
+    }
+
     async saveActiveNotebook(): Promise<void> {
         const nbPanel = this._app.shell.currentWidget as NotebookPanel;
         await nbPanel.context.save();
@@ -396,6 +412,13 @@ export class GalataInpage implements IGalataInpage {
                 await callback.onAfterScroll();
             }
         }
+    }
+
+    getNotebookToolbarItemIndex(itemName: string): number {
+        const nbPanel = this._app.shell.currentWidget as NotebookPanel;
+        const names = toArray(nbPanel.toolbar.names());
+
+        return names.indexOf(itemName);
     }
 
     isElementVisible(el: HTMLElement): boolean {

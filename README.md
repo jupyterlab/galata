@@ -283,6 +283,12 @@ Examples
     $ galata --update-references 2020-08-22_14-01-30
 ```
 
+## Reference Image Captures
+
+When doing visual regression tests, it is important to use reference images that were generated in the same environment. Otherwise, even though the same browser is used for testing, there might be minor differences in image renderings generated that could cause visual regression tests to fail.
+
+When adding a new visual regression test, first make sure your tests pass locally on your development environment, with a reference image generated in your dev environment. You can use images captured by Galata as reference images. They will be saved as part of test output, under `test-output/<test-id>/screenshots`. However, you shouldn't push these references images generated in your development environment to github. Instead, have the new regression tests run and fail by GitHub Actions first, then download the artifacts from GitHub and use the captures generated in GitHub testing environment as the reference images and push those in a separate commit.
+
 ## Community Guidelines and Code of Conduct
 
 This repository is a Jupyter project and follows the Jupyter

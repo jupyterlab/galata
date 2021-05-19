@@ -47,10 +47,12 @@ interface IGalataInpage {
     deleteNotebookCells(): Promise<void>;
     addNotebookCell(cellType: nbformat.CellType, source: string): Promise<boolean>;
     setNotebookCell(cellIndex: number, cellType: nbformat.CellType, source: string): Promise<boolean>;
+    isNotebookCellSelected(cellIndex: number): boolean;
     saveActiveNotebook(): Promise<void>;
     runActiveNotebook(): Promise<void>;
     waitForNotebookRun(): Promise<void>;
     runActiveNotebookCellByCell(callback?: INotebookRunCallback): Promise<void>;
+    getNotebookToolbarItemIndex(itemName: string): number;
     isElementVisible(el: HTMLElement): boolean;
     waitForSelector(selector: string, node?: Element, options?: IWaitForSelectorOptions): Promise<Node | void>;
     waitForXPath(selector: string, node?: Element, options?: IWaitForSelectorOptions): Promise<Node | void>;
