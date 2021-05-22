@@ -1544,9 +1544,15 @@ namespace galata {
                 return false;
             }
 
-            return await context.page.evaluate(({cellType, source}) => {
-                return window.galataip.addNotebookCell(cellType, source);
-            }, {cellType, source});
+            const numCells = await getCellCount();
+
+            await selectCells(numCells - 1);
+            await clickToolbarItem('insert');
+            await waitFor(async (): Promise<boolean> => {
+                return await getCellCount() === numCells + 1;
+            });
+
+            return await setCell(numCells, cellType, source);
         }
 
         export
@@ -1555,9 +1561,53 @@ namespace galata {
                 return false;
             }
 
-            return await context.page.evaluate(({cellIndex, cellType, source}) => {
-                return window.galataip.setNotebookCell(cellIndex, cellType, source);
-            }, {cellIndex, cellType, source});
+            await setCellType(cellIndex, cellType);
+
+            if (!await isCellSelected(cellIndex) && !await selectCells(cellIndex)) {
+                return false;
+            }
+
+            await enterCellEditingMode(cellIndex);
+
+            const keyboard = context.page.keyboard;
+            await keyboard.press('Control+A');
+            // give CodeMirror time to style properly
+            await keyboard.type(source, {delay: cellType === 'code' ? 100 : 0});
+
+            await leaveCellEditingMode(cellIndex);
+
+            // give CodeMirror time to style properly
+            if (cellType === 'code') {
+                await waitFor(500);
+            }
+
+            return true;
+        }
+
+        export
+        async function setCellType(cellIndex: number, cellType: nbformat.CellType): Promise<boolean> {
+            const nbPanel = await activity.getPanel();
+            if (!nbPanel) {
+                return false;
+            }
+
+            if (await getCellType(cellIndex) === cellType) {
+                return false;
+            }
+
+            if (!await selectCells(cellIndex)) {
+                return false;
+            }
+
+            await clickToolbarItem('cellType');
+            const selectInput = await nbPanel.$('div.jp-Notebook-toolbarCellTypeDropdown select');
+            if (!selectInput) {
+                return false;
+            }
+
+            await selectInput.selectOption(cellType);
+
+            return true;                        
         }
 
         export
@@ -1585,6 +1635,22 @@ namespace galata {
             }
 
             return null;
+        }
+
+        export
+        async function runCell(cellIndex: number, inplace?: boolean): Promise<boolean> {
+            if (!await isAnyActive()) {
+                return false;
+            }
+
+            if (!await isCellSelected(cellIndex) && !await selectCells(cellIndex)) {
+                return false;
+            }
+
+            await context.page.keyboard.press(inplace === true ? 'Control+Enter' : 'Shift+Enter');
+            await waitForRun();
+
+            return true;
         }
 
         export
