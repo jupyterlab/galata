@@ -13,7 +13,7 @@ lerna bootstrap --hoist
 lerna run build
 ```
 
-3. Run tests and make sure that all pass.
+3. Run tests and make sure that all pass. Before running tests, JupyterLab must be up and running. You can use the launch command described in `Launch JupyterLab` section of [README.md](README.md#launch-jupyterlab)
 
 ```
 lerna run test --stream

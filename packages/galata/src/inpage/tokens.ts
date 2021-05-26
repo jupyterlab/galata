@@ -5,8 +5,6 @@ import {
     JupyterFrontEnd, IRouter
 } from "@jupyterlab/application";
 
-import * as nbformat from '@jupyterlab/nbformat';
-
 import {
     IDocumentManager
 } from "@jupyterlab/docmanager";
@@ -45,8 +43,6 @@ interface IGalataInpage {
     sleep(duration: number): Promise<void>;
     waitForLaunch(path?: string): Promise<void>;
     deleteNotebookCells(): Promise<void>;
-    addNotebookCell(cellType: nbformat.CellType, source: string): Promise<boolean>;
-    setNotebookCell(cellIndex: number, cellType: nbformat.CellType, source: string): Promise<boolean>;
     isNotebookCellSelected(cellIndex: number): boolean;
     saveActiveNotebook(): Promise<void>;
     runActiveNotebook(): Promise<void>;
