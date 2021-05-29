@@ -1262,16 +1262,20 @@ namespace galata {
 
             await closeIcon.click();
 
-            if (!revertChanges) {
-                // close save prompt
-                const dialogSelector = '.jp-Dialog .jp-Dialog-content';
-                const dialog = await page.$(dialogSelector);
-                const okButton = dialog ?? await dialog.$('button.jp-mod-accept');
-                if (okButton) {
-                    await okButton.click();
+            // close save prompt
+            const dialogSelector = '.jp-Dialog .jp-Dialog-content';
+            const dialog = await page.$(dialogSelector);
+            if (dialog) {
+                const dlgBtnSelector = revertChanges ?
+                    'button.jp-mod-accept.jp-mod-warn' : // discard
+                    'button.jp-mod-accept:not(.jp-mod-warn)'; // save
+                const dlgBtn = await dialog.$(dlgBtnSelector);
+
+                if (dlgBtn) {
+                    await dlgBtn.click();
                 }
-                await page.waitForSelector(dialogSelector, { state: 'hidden' });
             }
+            await page.waitForSelector(dialogSelector, { state: 'hidden' });
 
             return true;
         }
