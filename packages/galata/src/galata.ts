@@ -1800,8 +1800,9 @@ namespace galata {
                 for (let widgetId of Object.keys(overrides)) {
                     overrides[widgetId] = 'left';
                 }
-                // default location of property inspector is right, move it to left during tests
+                // default location of the property inspector and debugger is right, move it to left during tests
                 overrides["jp-property-inspector"] = "left";
+                overrides["jp-debugger-sidebar"] = "left";
                 await settingRegistry.set(SIDEBAR_ID, 'overrides', overrides);
             }, {pluginId: PLUGIN_ID_SETTINGS as keyof IPluginNameToInterfaceMap});
 
