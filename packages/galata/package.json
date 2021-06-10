@@ -17,7 +17,7 @@
     "save-jlab-version": "node ./bin/buildutil.js --save-jlab-version",
     "enforce-version-match": "node ./bin/buildutil.js --enforce-version-match",
     "build": "jlpm run clean && jlpm run save-jlab-version && jlpm run build:inpage && jlpm run build:galata",
-    "prepublishOnly": "npm run build && npm run enforce-version-match",
+    "prepublishOnly": "jlpm run build && jlpm run enforce-version-match",
     "test": "node ./bin/cli.js"
   },
   "files": [
@@ -48,6 +48,7 @@
     "@types/node": "^13.1.1",
     "@types/pixelmatch": "^5.0.0",
     "@types/pngjs": "^3.4.1",
+    "@yarnpkg/lockfile": "^1.1.0",
     "ansi_up": "^5.0.0",
     "axios": "^0.21.1",
     "chalk": "^4.0.0",
