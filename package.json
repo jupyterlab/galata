@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
+    "build": "lerna run build",
     "start": "jupyter lab --config ./jupyter_server_config.py",
     "start:detached": "(jlpm run start&)",
     "test:ci": "lerna run test --stream --scope @jupyterlab/galata"
