@@ -7,6 +7,7 @@ const meow = require('meow');
 const fs = require('fs-extra');
 const path = require('path');
 const semver = require('semver');
+const lockfile = require('@yarnpkg/lockfile');
 
 const cli = meow(`
     Usage
@@ -52,24 +53,25 @@ function addToMetadata(data) {
 }
 
 if (cli.flags.saveJlabVersion) {
-    const packageFilePath = path.resolve(__dirname, '../../../package-lock.json');
-    const packageFileData = fs.existsSync(packageFilePath) ? fs.readJSONSync(packageFilePath) : undefined;
-    if (!packageFileData) {
-        console.log('package-lock.json not found!');
+    const packageFilePath = path.resolve(__dirname, '../../../yarn.lock');
+    if (!fs.existsSync(packageFilePath)) {
+        console.log('yarn.lock not found!');
         process.exit(1);
     }
 
-    if (!(packageFileData['dependencies'] && packageFileData['dependencies']['@jupyterlab/application'])) {
+    const yarnLockRaw = fs.readFileSync(packageFilePath, 'utf8');
+    const yarnLock = lockfile.parse(yarnLockRaw).object;
+    const packages = Object.keys(yarnLock);
+    const jlab = packages.find(pkg => pkg.startsWith('@jupyterlab/application'));
+    if (!jlab) {
         console.log('@jupyterlab/application package not found!');
         process.exit(1);
     }
 
-    const jlabPackage = packageFileData['dependencies']['@jupyterlab/application'];
-    const jlabVersion = jlabPackage['version'];
-
+    const jlabVersion = yarnLock[jlab].version;
     console.log(`JupyterLab version: ${jlabVersion}`);
 
-    addToMetadata({ jlabVersion: jlabVersion });
+    addToMetadata({ jlabVersion });
 }
 
 if (cli.flags.enforceVersionMatch) {
@@ -81,7 +83,7 @@ if (cli.flags.enforceVersionMatch) {
     }
 
     const galataVersion = packageFileData['version'];
-    
+
     const metadataFilePath = path.resolve(__dirname, './metadata.json');
     let metadata = {};
     if (fs.existsSync(metadataFilePath)) {
