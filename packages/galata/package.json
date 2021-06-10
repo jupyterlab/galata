@@ -76,7 +76,7 @@
     "@jupyterlab/cells": "^3.0.7",
     "@jupyterlab/docmanager": "^3.0.7",
     "@jupyterlab/notebook": "^3.0.7",
-    "@jupyterlab/settingregistry": "^3.0.3",
+    "@jupyterlab/settingregistry": "^3.0.6",
     "babel-jest": "^25.1.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-preset-env": "^1.7.0",

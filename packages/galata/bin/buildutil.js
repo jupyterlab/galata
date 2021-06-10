@@ -59,16 +59,16 @@ if (cli.flags.saveJlabVersion) {
         process.exit(1);
     }
 
-    const yarnLock = fs.readFileSync(packageFilePath, 'utf8');
-    const json = lockfile.parse(yarnLock);
-    const packages = Object.keys(json.object);
+    const yarnLockRaw = fs.readFileSync(packageFilePath, 'utf8');
+    const yarnLock = lockfile.parse(yarnLockRaw).object;
+    const packages = Object.keys(yarnLock);
     const jlab = packages.find(pkg => pkg.startsWith('@jupyterlab/application'));
     if (!jlab) {
         console.log('@jupyterlab/application package not found!');
         process.exit(1);
     }
 
-    const jlabVersion = jlab.version;
+    const jlabVersion = yarnLock[jlab].version;
     console.log(`JupyterLab version: ${jlabVersion}`);
 
     addToMetadata({ jlabVersion });
