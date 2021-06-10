@@ -16,7 +16,7 @@
     "build:galata": "tsc",
     "save-jlab-version": "node ./bin/buildutil.js --save-jlab-version",
     "enforce-version-match": "node ./bin/buildutil.js --enforce-version-match",
-    "build": "npm run clean && npm run save-jlab-version && npm run build:inpage && npm run build:galata",
+    "build": "jlpm run clean && jlpm run save-jlab-version && jlpm run build:inpage && jlpm run build:galata",
     "prepublishOnly": "npm run build && npm run enforce-version-match",
     "test": "node ./bin/cli.js"
   },

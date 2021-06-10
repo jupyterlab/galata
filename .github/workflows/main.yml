@@ -27,12 +27,11 @@ jobs:
         python -m pip install jupyterlab~=3.0.7
     - name: Build
       run: |
-        npm install --global lerna
-        lerna bootstrap --hoist
-        lerna run build
+        jlpm
+        jlpm run build
     - name: Launch JupyterLab
       run: |
-        npm run start:detached
+        jlpm run start:detached
     - name: Wait for JupyterLab
       uses: ifaxity/wait-on-action@v1
       with:
@@ -40,4 +39,4 @@ jobs:
         timeout: 20000
     - name: Test
       run: |
-        npm run test:ci
+        jlpm run test:ci
