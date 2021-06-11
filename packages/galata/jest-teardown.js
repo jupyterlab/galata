@@ -6,9 +6,9 @@ const { getConfig, saveLogsToFile } = require('./util');
 const config = getConfig();
 
 module.exports = async function () {
-    if (config.browserUrl === '') {
-        await global.__BROWSER_GLOBAL__.close();
-    }
+  if (config.browserUrl === '') {
+    await global.__BROWSER_GLOBAL__.close();
+  }
 
-    saveLogsToFile('jest-logs.json');
+  saveLogsToFile('jest-logs.json');
 };

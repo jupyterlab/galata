@@ -9,7 +9,8 @@ const path = require('path');
 const semver = require('semver');
 const lockfile = require('@yarnpkg/lockfile');
 
-const cli = meow(`
+const cli = meow(
+  `
     Usage
       $ galata-buildutil <options>
 
@@ -23,86 +24,95 @@ const cli = meow(`
 
     Examples
       $ galata-buildutil --save-jlab-version
-`, {
+`,
+  {
     flags: {
-        saveJlabVersion: {
-            type: 'boolean',
-            default: false
-        },
-        enforceVersionMatch: {
-            type: 'boolean',
-            default: false
-        }
+      saveJlabVersion: {
+        type: 'boolean',
+        default: false
+      },
+      enforceVersionMatch: {
+        type: 'boolean',
+        default: false
+      }
     }
-});
-
+  }
+);
 
 function addToMetadata(data) {
-    const metadataFilePath = path.resolve(__dirname, './metadata.json');
-    let metadata = {};
-    if (fs.existsSync(metadataFilePath)) {
-        try {
-            metadata = fs.readJSONSync(metadataFilePath);
-        } catch {
-        }
+  const metadataFilePath = path.resolve(__dirname, './metadata.json');
+  let metadata = {};
+  if (fs.existsSync(metadataFilePath)) {
+    try {
+      metadata = fs.readJSONSync(metadataFilePath);
+    } catch (reason) {
+      console.error(reason);
     }
+  }
 
-    metadata = { ...metadata, ...data };
+  metadata = { ...metadata, ...data };
 
-    fs.writeFileSync(metadataFilePath, JSON.stringify(metadata));
+  fs.writeFileSync(metadataFilePath, JSON.stringify(metadata));
 }
 
 if (cli.flags.saveJlabVersion) {
-    const packageFilePath = path.resolve(__dirname, '../../../yarn.lock');
-    if (!fs.existsSync(packageFilePath)) {
-        console.log('yarn.lock not found!');
-        process.exit(1);
-    }
+  const packageFilePath = path.resolve(__dirname, '../../../yarn.lock');
+  if (!fs.existsSync(packageFilePath)) {
+    console.log('yarn.lock not found!');
+    process.exit(1);
+  }
 
-    const yarnLockRaw = fs.readFileSync(packageFilePath, 'utf8');
-    const yarnLock = lockfile.parse(yarnLockRaw).object;
-    const packages = Object.keys(yarnLock);
-    const jlab = packages.find(pkg => pkg.startsWith('@jupyterlab/application'));
-    if (!jlab) {
-        console.log('@jupyterlab/application package not found!');
-        process.exit(1);
-    }
+  const yarnLockRaw = fs.readFileSync(packageFilePath, 'utf8');
+  const yarnLock = lockfile.parse(yarnLockRaw).object;
+  const packages = Object.keys(yarnLock);
+  const jlab = packages.find(pkg => pkg.startsWith('@jupyterlab/application'));
+  if (!jlab) {
+    console.log('@jupyterlab/application package not found!');
+    process.exit(1);
+  }
 
-    const jlabVersion = yarnLock[jlab].version;
-    console.log(`JupyterLab version: ${jlabVersion}`);
+  const jlabVersion = yarnLock[jlab].version;
+  console.log(`JupyterLab version: ${jlabVersion}`);
 
-    addToMetadata({ jlabVersion });
+  addToMetadata({ jlabVersion });
 }
 
 if (cli.flags.enforceVersionMatch) {
-    const packageFilePath = path.resolve(__dirname, '../package.json');
-    const packageFileData = fs.existsSync(packageFilePath) ? fs.readJSONSync(packageFilePath) : undefined;
-    if (!packageFileData) {
-        console.log('package.json not found!');
-        process.exit(1);
+  const packageFilePath = path.resolve(__dirname, '../package.json');
+  const packageFileData = fs.existsSync(packageFilePath)
+    ? fs.readJSONSync(packageFilePath)
+    : undefined;
+  if (!packageFileData) {
+    console.log('package.json not found!');
+    process.exit(1);
+  }
+
+  const galataVersion = packageFileData['version'];
+
+  const metadataFilePath = path.resolve(__dirname, './metadata.json');
+  let metadata = {};
+  if (fs.existsSync(metadataFilePath)) {
+    try {
+      metadata = fs.readJSONSync(metadataFilePath);
+    } catch (reason) {
+      console.error(reason);
     }
+  }
 
-    const galataVersion = packageFileData['version'];
+  const jlabVersion = metadata['jlabVersion'];
 
-    const metadataFilePath = path.resolve(__dirname, './metadata.json');
-    let metadata = {};
-    if (fs.existsSync(metadataFilePath)) {
-        try {
-            metadata = fs.readJSONSync(metadataFilePath);
-        } catch {
-        }
-    }
+  if (
+    !semver.valid(galataVersion) ||
+    !semver.valid(jlabVersion) ||
+    semver.major(galataVersion) !== semver.major(jlabVersion) ||
+    semver.minor(galataVersion) !== semver.minor(jlabVersion) ||
+    semver.patch(galataVersion) !== semver.patch(jlabVersion)
+  ) {
+    console.log(
+      `Galata package version ${galataVersion} doesn't match target JupyterLab version ${jlabVersion}`
+    );
+    process.exit(1);
+  }
 
-    const jlabVersion = metadata['jlabVersion'];
-
-    if (!semver.valid(galataVersion) || !semver.valid(jlabVersion) ||
-        semver.major(galataVersion) !== semver.major(jlabVersion) ||
-        semver.minor(galataVersion) !== semver.minor(jlabVersion) ||
-        semver.patch(galataVersion) !== semver.patch(jlabVersion)
-    ) {
-        console.log(`Galata package version ${galataVersion} doesn't match target JupyterLab version ${jlabVersion}`);
-        process.exit(1);
-    }
-
-    process.exit(0);
+  process.exit(0);
 }
