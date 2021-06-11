@@ -7,61 +7,78 @@ import * as path from 'path';
 jest.setTimeout(60000);
 
 describe('Contents API Tests', () => {
-    beforeAll(async () => {
-        await galata.resetUI();
-        galata.context.capturePrefix = 'contents';
-    });
+  beforeAll(async () => {
+    await galata.resetUI();
+    galata.context.capturePrefix = 'contents';
+  });
 
-    afterAll(async () => {
-        galata.context.capturePrefix = '';
-    });
-    
-    test('Upload directory to server', async () => {
-        await galata.contents.moveDirectoryToServer(path.resolve(__dirname, './upload'), 'uploaded_dir');
-    });
+  afterAll(async () => {
+    galata.context.capturePrefix = '';
+  });
 
-    test('Open folder of notebooks and run', async () => {
-        const sourceDir = path.resolve(__dirname, './upload');
-        const files = galata.getFilesInDirectory(sourceDir);
-        for (let file of files) {
-            if (file.endsWith('.ipynb')) {
-                const relativePath = file.substring(sourceDir.length + 1);
-                const serverPath = `uploaded_dir/${relativePath}`;
-                await galata.notebook.openByPath(serverPath);
-                await galata.notebook.runCellByCell();
-                await galata.notebook.revertChanges();
-                await galata.notebook.close();
-            }
-        }
-    });
+  test('Upload directory to server', async () => {
+    await galata.contents.moveDirectoryToServer(
+      path.resolve(__dirname, './upload'),
+      'uploaded_dir'
+    );
+  });
 
-    test('File operations', async () => {
-        await galata.contents.moveFileToServer(path.resolve(__dirname, './upload/upload_image.png'));
-        await galata.contents.renameFile('upload_image.png', 'renamed_image.png');
-        expect(await galata.contents.fileExists('renamed_image.png')).toBeTruthy();
-        await galata.contents.deleteFile('renamed_image.png');
+  test('Open folder of notebooks and run', async () => {
+    const sourceDir = path.resolve(__dirname, './upload');
+    const files = galata.getFilesInDirectory(sourceDir);
+    for (const file of files) {
+      if (file.endsWith('.ipynb')) {
+        const relativePath = file.substring(sourceDir.length + 1);
+        const serverPath = `uploaded_dir/${relativePath}`;
+        await galata.notebook.openByPath(serverPath);
+        await galata.notebook.runCellByCell();
+        await galata.notebook.revertChanges();
+        await galata.notebook.close();
+      }
+    }
+  });
 
-        // into sub folder
-        await galata.contents.moveFileToServer(path.resolve(__dirname, './upload/upload_image.png'), 'sub_dir/image.png');
-        await galata.contents.renameFile('sub_dir/image.png', 'sub_dir/renamed_image.png');
-        await galata.filebrowser.openDirectory('sub_dir');
-        expect(await galata.filebrowser.getCurrentDirectory()).toBe('sub_dir')
-        expect(await galata.contents.fileExists('sub_dir/renamed_image.png')).toBeTruthy();
-    });
+  test('File operations', async () => {
+    await galata.contents.moveFileToServer(
+      path.resolve(__dirname, './upload/upload_image.png')
+    );
+    await galata.contents.renameFile('upload_image.png', 'renamed_image.png');
+    expect(await galata.contents.fileExists('renamed_image.png')).toBeTruthy();
+    await galata.contents.deleteFile('renamed_image.png');
 
-    test('Go to home directory', async () => {
-        await galata.filebrowser.openHomeDirectory();
-    });
+    // into sub folder
+    await galata.contents.moveFileToServer(
+      path.resolve(__dirname, './upload/upload_image.png'),
+      'sub_dir/image.png'
+    );
+    await galata.contents.renameFile(
+      'sub_dir/image.png',
+      'sub_dir/renamed_image.png'
+    );
+    await galata.filebrowser.openDirectory('sub_dir');
+    expect(await galata.filebrowser.getCurrentDirectory()).toBe('sub_dir');
+    expect(
+      await galata.contents.fileExists('sub_dir/renamed_image.png')
+    ).toBeTruthy();
+  });
 
-    test('File Explorer visibility', async () => {
-        expect(await galata.filebrowser.isFileListedInBrowser('renamed_image.png')).toBeFalsy();
-        await galata.filebrowser.revealFileInBrowser('sub_dir/renamed_image.png');
-        expect(await galata.filebrowser.isFileListedInBrowser('renamed_image.png')).toBeTruthy();
-    });
+  test('Go to home directory', async () => {
+    await galata.filebrowser.openHomeDirectory();
+  });
 
-    test('Delete uploads', async () => {
-        await galata.filebrowser.openHomeDirectory();
-        await galata.contents.deleteDirectory('uploaded_dir');
-        await galata.contents.deleteDirectory('sub_dir');
-    });
+  test('File Explorer visibility', async () => {
+    expect(
+      await galata.filebrowser.isFileListedInBrowser('renamed_image.png')
+    ).toBeFalsy();
+    await galata.filebrowser.revealFileInBrowser('sub_dir/renamed_image.png');
+    expect(
+      await galata.filebrowser.isFileListedInBrowser('renamed_image.png')
+    ).toBeTruthy();
+  });
+
+  test('Delete uploads', async () => {
+    await galata.filebrowser.openHomeDirectory();
+    await galata.contents.deleteDirectory('uploaded_dir');
+    await galata.contents.deleteDirectory('sub_dir');
+  });
 });

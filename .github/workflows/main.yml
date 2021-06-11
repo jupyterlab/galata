@@ -11,32 +11,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Install node
-      uses: actions/setup-node@v2
-      with:
-       node-version: '14.x'
-    - name: Install Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.7'
-        architecture: 'x64'
-    - name: Install dependencies
-      run: |
-        python -m pip install jupyterlab~=3.0.7
-    - name: Build
-      run: |
-        jlpm
-        jlpm run build
-    - name: Launch JupyterLab
-      run: |
-        jlpm run start:detached
-    - name: Wait for JupyterLab
-      uses: ifaxity/wait-on-action@v1
-      with:
-        resource: http-get://localhost:8888/api
-        timeout: 20000
-    - name: Test
-      run: |
-        jlpm run test:ci
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+          architecture: 'x64'
+      - name: Install dependencies
+        run: |
+          python -m pip install jupyterlab~=3.0.7
+      - name: Install & lint
+        run: |
+          jlpm
+          jlpm eslint:check
+      - name: Build
+        run: |
+          jlpm run build
+      - name: Launch JupyterLab
+        run: |
+          jlpm run start:detached
+      - name: Wait for JupyterLab
+        uses: ifaxity/wait-on-action@v1
+        with:
+          resource: http-get://localhost:8888/api
+          timeout: 20000
+      - name: Test
+        run: |
+          jlpm run test:ci
