@@ -107,7 +107,7 @@ export namespace galata {
 
   export type SidebarPosition = 'left' | 'right';
 
-  export type SidebarTabId =
+  export type DefaultSidebarTabId =
     | 'filebrowser'
     | 'jp-running-sessions'
     | 'tab-manager'
@@ -116,7 +116,9 @@ export namespace galata {
     | 'extensionmanager.main-view'
     | 'jp-debugger-sidebar';
 
-  export type NotebookToolbarItemId =
+  export type SidebarTabId = DefaultSidebarTabId | string;
+
+  export type DefaultNotebookToolbarItemId =
     | 'save'
     | 'insert'
     | 'cut'
@@ -129,6 +131,8 @@ export namespace galata {
     | 'cellType'
     | 'kernelName'
     | 'kernelStatus';
+
+  export type NotebookToolbarItemId = DefaultNotebookToolbarItemId | string;
 
   export function xpContainsClass(className: string): string {
     return `contains(concat(" ", normalize-space(@class), " "), " ${className} ")`;
