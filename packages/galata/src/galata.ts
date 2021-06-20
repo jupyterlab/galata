@@ -236,6 +236,27 @@ export namespace galata {
     }
   }
 
+  export async function waitForTransition(
+    element: ElementHandle<Element> | string
+  ): Promise<void> {
+    const el =
+      typeof element === 'string' ? await context.page.$(element) : element;
+
+    if (el) {
+      return context.page.evaluate(el => {
+        return new Promise(resolve => {
+          const onEndHandler = () => {
+            el.removeEventListener('transitionend', onEndHandler);
+            resolve();
+          };
+          el.addEventListener('transitionend', onEndHandler);
+        });
+      }, el);
+    }
+
+    return Promise.reject();
+  }
+
   function logTestCapture(capture: ICapture) {
     if (!context.testCaptures[_currentSuite]) {
       context.testCaptures[_currentSuite] = {};
@@ -2177,7 +2198,7 @@ export namespace galata {
     const checked = (await toggle.getAttribute('aria-checked')) === 'true';
 
     if ((checked && !simple) || (!checked && simple)) {
-      toggle.click();
+      await Promise.all([waitForTransition(toggle), toggle.click()]);
     }
 
     await waitFor(async () => {
