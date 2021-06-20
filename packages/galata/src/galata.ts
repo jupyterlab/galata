@@ -814,7 +814,7 @@ export namespace galata {
       try {
         response = await axios(request);
       } catch (error) {
-        console.error(`Fail to get content metadata for ${dirPath}`);
+        // eslint-disable-next-line no-empty
       }
 
       const succeeded = response && response.status === 200;
