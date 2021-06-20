@@ -1922,6 +1922,15 @@ export namespace galata {
         await label.getProperty('textContent')
       ).jsonValue()) as string;
       await contents.renameFile(assignedName, name);
+
+      //  wait for new name up to 5 seconds
+      await Promise.race([
+        waitFor(5000),
+        waitFor(async (): Promise<boolean> => {
+          return await contents.fileExists(name);
+        })
+      ]);
+
       const renamedTab = await activity.getTab(name);
 
       return renamedTab !== null;
