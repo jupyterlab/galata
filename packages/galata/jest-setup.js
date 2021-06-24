@@ -65,15 +65,24 @@ module.exports = async function () {
   const headless = config.headless;
   const slowMo = config.slowMo;
   let browser;
+  let wsEndpoint;
 
   if (config.browserUrl !== '') {
     try {
       const apiUrl = `${config.browserUrl}/json/version`;
       const response = await axios.get(apiUrl);
-      browser = await pwBrowser.connect({
-        wsEndpoint: response.data.webSocketDebuggerUrl,
-        slowMo: slowMo
-      });
+      wsEndpoint = response.data.webSocketDebuggerUrl;
+      if (browserType === 'chromium') {
+        browser = await pwBrowser.connectOverCDP({
+          endpointURL: wsEndpoint,
+          slowMo: slowMo
+        });
+      } else {
+        browser = await pwBrowser.connect({
+          wsEndpoint: wsEndpoint,
+          slowMo: slowMo
+        });
+      }
     } catch (reason) {
       await logAndExit(
         'error',
@@ -104,6 +113,7 @@ module.exports = async function () {
         },
         slowMo: slowMo
       });
+      wsEndpoint = browser.wsEndpoint();
     } catch (reason) {
       await logAndExit(
         'error',
@@ -119,6 +129,7 @@ module.exports = async function () {
   const sessionInfo = {
     testId: config.testId,
     browserType: config.browserType,
+    browserUrl: config.browserUrl,
     testOutputDir: config.testOutputDir,
     referenceDir: config.referenceDir,
     jlabBaseUrl: config.jlabBaseUrl,
@@ -126,7 +137,7 @@ module.exports = async function () {
     skipVisualRegression: config.skipVisualRegression === true,
     skipHtmlRegression: config.skipHtmlRegression === true,
     discardMatchedCaptures: config.discardMatchedCaptures !== false,
-    wsEndpoint: browser.wsEndpoint(),
+    wsEndpoint: wsEndpoint,
     buildJlabVersion: getBuildJlabVersion(),
     imageMatchThreshold: config.imageMatchThreshold
   };
