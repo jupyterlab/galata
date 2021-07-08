@@ -35,6 +35,9 @@ cd galata/packages/galata-example
 # install dependencies
 jlpm
 
+# build
+jlpm run build 
+
 # run test suites using `test` script which calls `galata` CLI script
 jlpm run test
 ```
