@@ -123,6 +123,7 @@ module.exports = async function () {
     referenceDir: config.referenceDir,
     jlabBaseUrl: config.jlabBaseUrl,
     jlabToken: config.jlabToken,
+    generateWorkspace: config.generateWorkspace,
     skipVisualRegression: config.skipVisualRegression === true,
     skipHtmlRegression: config.skipHtmlRegression === true,
     discardMatchedCaptures: config.discardMatchedCaptures !== false,
