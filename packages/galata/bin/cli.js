@@ -87,7 +87,7 @@ const cli = meow(
       },
       generateWorkspace: {
         type: 'boolean',
-        default: true
+        default: config.generateWorkspace !== false
       },
       headless: {
         type: 'boolean',
