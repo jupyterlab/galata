@@ -48,3 +48,5 @@ jobs:
         uses: jupyter-server/jupyter_releaser/.github/actions/check-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          RH_VERSION_SPEC: 3.0.0-1
