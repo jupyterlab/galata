@@ -247,7 +247,9 @@ class TestEnvironment extends NodeEnvironment {
       _createNewPage: this.createNewPage.bind(this),
       _reloadPage: this.reloadPage.bind(this)
     };
-    await this.createNewPage({ generateWorkspace: true });
+    await this.createNewPage({
+      generateWorkspace: sessionInfo.generateWorkspace
+    });
   }
 
   async teardown() {

@@ -40,6 +40,7 @@ const cli = meow(
       --test-path-pattern         regexp pattern to match test files
       --jlab-base-url             JupyterLab base URL
       --jlab-token                JupyterLab authentication token
+      --generate-workspace        Whether to generate a new workspace for the session
       --jest-config               jest configuration file
       --jest-path                 jest executable path
       --headless                  flag to enable browser headless mode
@@ -83,6 +84,10 @@ const cli = meow(
       jlabToken: {
         type: 'string',
         default: config.jlabToken || ''
+      },
+      generateWorkspace: {
+        type: 'boolean',
+        default: config.generateWorkspace !== false
       },
       headless: {
         type: 'boolean',
