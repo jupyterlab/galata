@@ -33,13 +33,13 @@ git clone https://github.com/jupyterlab/galata.git
 cd galata/packages/galata-example
 
 # install dependencies
-jlpm
+yarn
 
 # build
-jlpm run build 
+yarn run build
 
 # run test suites using `test` script which calls `galata` CLI script
-jlpm run test
+yarn run test
 ```
 
 Galata should generate console output similar to following
@@ -51,7 +51,7 @@ Galata should generate console output similar to following
 
 ```
 
-You can edit the test suite file [`galata-example/tests/test.test.ts`](packages/galata-example/tests/test.test.ts) or add more test suites to the [`galata-example/tests`](packages/galata-example/tests/) directory. You can pass additional [command-line options](#command-line-options) to Galata by appending them to the `jlpm run test` command such as `jlpm run test -- --no-headless`.
+You can edit the test suite file [`galata-example/tests/test.test.ts`](packages/galata-example/tests/test.test.ts) or add more test suites to the [`galata-example/tests`](packages/galata-example/tests/) directory. You can pass additional [command-line options](#command-line-options) to Galata by appending them to the `yarn run test` command such as `yarn run test -- --no-headless`.
 
 Additional test suite examples are available in [`galata/tests`](packages/galata/tests/). They contain examples of creating notebooks, uploading notebooks to JupyterLab, running notebooks and taking screenshots.
 
@@ -68,8 +68,8 @@ Galata package is versioned with the same major, minor and patch versions as the
 
 Install dependencies and build
 ```
-jlpm
-jlpm run build
+yarn
+yarn run build
 ```
 
 For tests to be run, a JupyterLab instance must be up and running. Launch it without credentials. Tests expect to connect JupyterLab from `localhost:8888` by default. If a different URL is to be used, it can be specified using Galata's `--jlab-base-url` command line argument. If your tests are modifying files (upload / rename / delete), or taking captures that include file explorer then it is suggested to launch JupyterLab from inside an empty directory.
@@ -81,11 +81,11 @@ Galata uses headless browser to launch JupyterLab and runs tests in. Browser can
 Galata can also connect to Browser via a remote debugging URL. It can be specified using `--browser-url`.
 
 ## Running tests
-There are two projects in this mono-repo. `galata` core project and `galata-example` project which is a boilerplate project that shows how `galata` can be integrated into a node project. Both of these projects contain some test suites that serve as unit tests and examples. You can run them using `lerna run test` or `jlpm run test` in each project's root directory. It is suggested to run tests in each projects directory as below. Otherwise you need to run `lerna run test --stream` to see detailed result of each test in a test suite.
+There are two projects in this mono-repo. `galata` core project and `galata-example` project which is a boilerplate project that shows how `galata` can be integrated into a node project. Both of these projects contain some test suites that serve as unit tests and examples. You can run them using `lerna run test` or `yarn run test` in each project's root directory. It is suggested to run tests in each projects directory as below. Otherwise you need to run `lerna run test --stream` to see detailed result of each test in a test suite.
 
 ```
 cd packages/galata
-jlpm run test
+yarn run test
 ```
 
 ## Configuration

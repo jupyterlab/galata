@@ -27,14 +27,14 @@ jobs:
           python -m pip install jupyterlab~=3.0.11
       - name: Install & lint
         run: |
-          jlpm
-          jlpm eslint:check
+          yarn
+          yarn eslint:check
       - name: Build
         run: |
-          jlpm run build
+          yarn run build
       - name: Launch JupyterLab
         run: |
-          jlpm run start:detached
+          yarn run start:detached
       - name: Wait for JupyterLab
         uses: ifaxity/wait-on-action@v1
         with:
@@ -42,4 +42,4 @@ jobs:
           timeout: 20000
       - name: Test
         run: |
-          jlpm run test:ci
+          yarn run test:ci

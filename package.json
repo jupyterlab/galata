@@ -7,7 +7,7 @@
     "eslint:check": "eslint . --ext .js,.ts,.tsx",
     "install": "lerna bootstrap",
     "start": "jupyter lab --config ./jupyter_server_config.py",
-    "start:detached": "(jlpm run start&)",
+    "start:detached": "(yarn run start&)",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test --stream --scope @jupyterlab/galata"
   },
