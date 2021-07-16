@@ -2,6 +2,34 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.1.0
+
+([Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-2...7500160990081d6d61bd15785e82e53d398cce33))
+
+### Enhancements made
+
+- Make generateWorkspace configurable via the CLI [#71](https://github.com/jupyterlab/galata/pull/71) ([@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Add check release workflow on CI and CHANGELOG.md [#72](https://github.com/jupyterlab/galata/pull/72) ([@jtpio](https://github.com/jtpio))
+
+### Documentation improvements
+
+- Add jlpm build step to readme  [#70](https://github.com/jupyterlab/galata/pull/70) ([@legendb317](https://github.com/legendb317))
+
+### Other merged PRs
+
+- Bump postcss from 7.0.35 to 7.0.36 [#64](https://github.com/jupyterlab/galata/pull/64) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlab/galata/graphs/contributors?from=2021-06-20&to=2021-07-16&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Ajupyterlab%2Fgalata+involves%3Adependabot+updated%3A2021-06-20..2021-07-16&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlab%2Fgalata+involves%3Ajtpio+updated%3A2021-06-20..2021-07-16&type=Issues) | [@legendb317](https://github.com/search?q=repo%3Ajupyterlab%2Fgalata+involves%3Alegendb317+updated%3A2021-06-20..2021-07-16&type=Issues) | [@welcome](https://github.com/search?q=repo%3Ajupyterlab%2Fgalata+involves%3Awelcome+updated%3A2021-06-20..2021-07-16&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## [v3.0.11-2](https://github.com/jupyterlab/galata/tree/v3.0.11-2)
 
 [Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-1...v3.0.11-2)
@@ -13,8 +41,6 @@
 - fix jlpm build output dir [\#62](https://github.com/jupyterlab/galata/pull/62) (@mbektas)
 - Wait fixes [\#61](https://github.com/jupyterlab/galata/pull/61) (@mbektas)
 - Allow for custom tab bar and nb toolbar item ids [\#48](https://github.com/jupyterlab/galata/pull/48) (@fcollonval)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## [v3.0.11-1](https://github.com/jupyterlab/galata/tree/v3.0.11-1)
 
