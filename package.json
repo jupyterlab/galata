@@ -30,6 +30,9 @@
     "hooks": {
       "before-build-npm": [
         "yarn run build"
+      ],
+      "before-bump-version": [
+        "git checkout ."
       ]
     },
     "options": {
