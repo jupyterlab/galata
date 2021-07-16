@@ -1,5 +1,6 @@
 {
-  "name": "root",
+  "name": "@jupyterlab/galata-root",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "lerna run build",
@@ -7,7 +8,7 @@
     "eslint:check": "eslint . --ext .js,.ts,.tsx",
     "install": "lerna bootstrap",
     "start": "jupyter lab --config ./jupyter_server_config.py",
-    "start:detached": "(jlpm run start&)",
+    "start:detached": "(yarn run start&)",
     "test": "lerna run test --stream",
     "test:ci": "lerna run test --stream --scope @jupyterlab/galata"
   },
@@ -24,5 +25,17 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "jupyter-releaser": {
+    "hooks": {
+      "before-build-npm": [
+        "yarn run build"
+      ]
+    },
+    "options": {
+      "version-cmd": [
+        "yarn run lerna version --force-publish --no-push --no-git-tag-version --exact --yes"
+      ]
+    }
   }
 }
