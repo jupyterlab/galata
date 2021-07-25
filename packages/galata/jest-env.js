@@ -219,9 +219,15 @@ class TestEnvironment extends NodeEnvironment {
     let browser;
 
     try {
-      browser = await pwBrowser.connect({
-        wsEndpoint: sessionInfo.wsEndpoint
-      });
+      if (browserType === 'chromium' && config.browserUrl !== '') {
+        browser = await pwBrowser.connectOverCDP({
+          endpointURL: sessionInfo.wsEndpoint
+        });
+      } else {
+        browser = await pwBrowser.connect({
+          wsEndpoint: sessionInfo.wsEndpoint
+        });
+      }
     } catch (reason) {
       const message = `Failed to connect to browser using wsEndpoint ${sessionInfo.wsEndpoint}`;
       log('error', message);
