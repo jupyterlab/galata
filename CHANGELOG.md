@@ -2,6 +2,17 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## [v3.0.11-3](https://github.com/jupyterlab/galata/tree/v3.0.11-3)
+
+[Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-2...v3.0.11-3)
+
+### Changes
+
+- fix remote connection to chromium browser [\#66](https://github.com/jupyterlab/galata/pull/66) (@mbektas)
+- Make generateWorkspace configurable via the CLI [\#71](https://github.com/jupyterlab/galata/pull/71) (@jtpio)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## [v3.0.11-2](https://github.com/jupyterlab/galata/tree/v3.0.11-2)
 
 [Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-1...v3.0.11-2)
@@ -13,8 +24,6 @@
 - fix jlpm build output dir [\#62](https://github.com/jupyterlab/galata/pull/62) (@mbektas)
 - Wait fixes [\#61](https://github.com/jupyterlab/galata/pull/61) (@mbektas)
 - Allow for custom tab bar and nb toolbar item ids [\#48](https://github.com/jupyterlab/galata/pull/48) (@fcollonval)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## [v3.0.11-1](https://github.com/jupyterlab/galata/tree/v3.0.11-1)
 
