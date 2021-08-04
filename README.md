@@ -259,6 +259,10 @@ Notes:
 
     *Default*: `false`
 
+- **--max-wait**: Maximum time (in ms) to wait for JupyterLab to load
+
+    *Default*: `5000`
+
 - **--help**: Show usage information
 
     Shows usage information with list of all command-line options. Skips test execution.

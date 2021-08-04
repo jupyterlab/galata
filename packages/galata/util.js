@@ -15,7 +15,8 @@ const configKeys = {
     'testId',
     'testOutputDir',
     'referenceDir',
-    'theme'
+    'theme',
+    'maxWait'
   ]),
   boolean: new Set([
     'headless',
