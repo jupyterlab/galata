@@ -75,7 +75,7 @@ class TestEnvironment extends NodeEnvironment {
   /*
    * Wait for window.jupyterlab object to be available or until maxWait
    */
-  async waitForJupyterLabAppObject(maxWait = 5000) {
+  async waitForJupyterLabAppObject(maxWait = 10000) {
     const context = this.global.__TEST_CONTEXT__;
     const checkPeriod = 200;
 
