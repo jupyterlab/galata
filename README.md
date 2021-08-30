@@ -7,6 +7,13 @@
     />
 </h1>
 
+
+## Archived
+
+**This project is archived. Development is now happening in https://github.com/jupyterlab/jupyterlab**.
+
+---
+
 Galata is a JupyterLab UI Testing Framework that provides:
 - **[Rich High Level API](packages/galata/src/galata.ts)** to control and inspect JupyterLab UI programmatically
 - **Testing Tools** for capture, comparison and report generation
