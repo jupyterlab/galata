@@ -103,7 +103,8 @@ class TestEnvironment extends NodeEnvironment {
       await context.page.goto(context.jlabUrl, {
         waitUntil: 'domcontentloaded'
       });
-      await this.waitForJupyterLabAppObject();
+      const maxWait = config.maxWait ? config.maxWait : 5000;
+      await this.waitForJupyterLabAppObject(maxWait);
     } catch (error) {
       await logAndExit(
         'error',

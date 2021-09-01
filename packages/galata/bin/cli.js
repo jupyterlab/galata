@@ -59,6 +59,7 @@ const cli = meow(
       --image-match-threshold     image matching threshold
       --slow-mo                   slow down UI operations by the specified ms
       --theme                     JupyterLab Theme to set [light / JupyterLab Light, dark / JupyterLab Dark, installed theme name]
+      --max-wait                  maximum time (in ms) to wait for for JupyterLab to load (window.jupyterlab object available)
 
     Other options:
       --launch-result-server      launch result file server for a test
@@ -193,6 +194,10 @@ const cli = meow(
       theme: {
         type: 'string',
         default: config.theme || ''
+      },
+      maxWait: {
+        type: 'number',
+        default: config.maxWait || 5000
       }
     }
   }
