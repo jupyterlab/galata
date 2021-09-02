@@ -2,6 +2,17 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## [v3.0.11-4](https://github.com/jupyterlab/galata/tree/v3.0.11-4)
+
+[Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-3...v3.0.11-4)
+
+### Changes
+
+- --max-wait configuration option for JupyterLab load max wait time [\#85](https://github.com/jupyterlab/galata/pull/85) (@dharmaquark)
+- Various dependency upgrades for security
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## [v3.0.11-3](https://github.com/jupyterlab/galata/tree/v3.0.11-3)
 
 [Full Changelog](https://github.com/jupyterlab/galata/compare/v3.0.11-2...v3.0.11-3)
@@ -11,7 +22,6 @@
 - fix remote connection to chromium browser [\#66](https://github.com/jupyterlab/galata/pull/66) (@mbektas)
 - Make generateWorkspace configurable via the CLI [\#71](https://github.com/jupyterlab/galata/pull/71) (@jtpio)
 
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## [v3.0.11-2](https://github.com/jupyterlab/galata/tree/v3.0.11-2)
 
